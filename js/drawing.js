@@ -1,103 +1,98 @@
-const initMouse = {
-  x: 0,
-  y: 0
+"use strict";
+
+window.addEventListener("resize", maskSize);
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+const colorButtons = document.querySelector(".draw-tools");
+let curves = [];
+let color = {
+  red: "#ea5d56",
+  yellow: "#f3d135",
+  green: "#6cbe47",
+  blue: "#53a7f5",
+  purple: "#b36ade"
 };
-const curMouse = {
-  x: 0,
-  y: 0
-};
-let canvasContext;
+let drawing = false;
+let needsRepaint = false;
 
-function paintModeHandler() {
-  const paintCanvas = $(".canvas_image_draw");
-  const picture = $(".picture_wrap");
-  canvasContext = paintCanvas.getContext("2d");
+canvas.addEventListener("dblclick", clearCanvas);
 
-  canvasContext.strokeStyle = "green";
-  canvasContext.lineWidth = 5;
-
-  paintCanvas.addEventListener(
-    "mousedown",
-    function(event) {
-      initMouse.x = event.offsetX;
-      initMouse.y = event.offsetY;
-      paintCanvas.addEventListener("mousemove", onPaint, false);
-    },
-    false
-  );
-
-  paintCanvas.addEventListener(
-    "mouseup",
-    function() {
-      paintCanvas.removeEventListener("mousemove", onPaint, false);
-      sendCanvas();
-    },
-    false
-  );
-
-  const menuColor = document.getElementsByClassName("menu__color");
-  for (let i = 0; i < menuColor.length; i++) {
-    menuColor[i].addEventListener("click", changeColor, false);
+colorButtons.addEventListener("click", event => {
+  if (event.target.name === "color") {
+    const currentColor = document.querySelector(".menu__color[checked]");
+    currentColor.removeAttribute("checked");
+    event.target.setAttribute("checked", "");
   }
+});
+
+function clearCanvas() {
+  console.log(`Запущена функция clearCanvas()`);
+  curves = [];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  needsRepaint = true;
 }
 
-function onPaint(event) {
-  curMouse.x = event.offsetX;
-  curMouse.y = event.offsetY;
-  with (canvasContext) {
-    beginPath();
-    lineJoin = "round";
-    moveTo(initMouse.x, initMouse.y);
-    lineTo(curMouse.x, curMouse.y);
-    closePath();
-    stroke();
+function getColor() {
+  const currentColor = document.querySelector(".menu__color:checked");
+  return color[currentColor.value];
+}
+
+function smoothCurveBetween(p1, p2) {
+  const cp = p1.map((coord, idx) => (coord + p2[idx]) / 2);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = getColor();
+  ctx.quadraticCurveTo(...p1, ...cp);
+}
+
+function smoothCurve(points) {
+  ctx.beginPath();
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.moveTo(...points[0]);
+  for (let i = 1; i < points.length - 1; i++) {
+    smoothCurveBetween(points[i], points[i + 1]);
   }
-  initMouse.x = curMouse.x;
-  initMouse.y = curMouse.y;
+  ctx.stroke();
 }
 
-function changeColor(event) {
-  canvasContext.strokeStyle = event.target.getAttribute("value");
-  canvasContext.globalCompositeOperation = "source-over";
-  canvasContext.lineWidth = 5;
-}
-
-eraserEl.addEventListener("click", eraser, false);
-
-function eraser() {
-  canvasContext.globalCompositeOperation = "destination-out";
-  canvasContext.lineWidth = 10;
-}
-
-function resetCanvas() {
-  const resetMask = $(".canvas_mask");
-  const canvasContextReset = resetMask.getContext("2d");
-  canvasContextReset.clearRect(0, 0, resetMask.width, resetMask.height);
-  const resetImageDraw = $(".canvas_image_draw");
-  const canvasContextResetImg = resetImageDraw.getContext("2d");
-  canvasContextResetImg.clearRect(
-    0,
-    0,
-    resetImageDraw.width,
-    resetImageDraw.height
-  );
-}
-
-window.addEventListener("resize", resizeCanvas, false);
-
-function resizeCanvas() {
-  const imageDraw = $(".canvas_image_draw");
-  const imageDrawContext = imageDraw.getContext("2d");
-  imageDraw.width = $(".picture_wrap").clientWidth;
-  imageDraw.height = $(".picture_wrap").clientHeight;
-  imageDrawContext.clearRect(0, 0, imageDraw.width, imageDraw.height);
-  imageDrawContext.strokeStyle = "green";
-  imageDrawContext.lineWidth = 5;
-  const colors = document.getElementsByClassName("menu__color");
-  const colorsArr = Array.from(colors);
-  for (let i = 0; i < colorsArr.length; i++) {
-    if (colorsArr[i].checked) {
-      imageDrawContext.strokeStyle = `${colorsArr[i].defaultValue}`;
-    }
+canvas.addEventListener("mousedown", event => {
+  if (draw.dataset.state === "selected") {
+    const curve = [];
+    drawing = true;
+    curve.push([event.offsetX, event.offsetY]);
+    curves.push(curve);
+    needsRepaint = true;
   }
+});
+
+canvas.addEventListener("mouseup", () => {
+  curves = [];
+  drawing = false;
+});
+
+canvas.addEventListener("mouseleave", () => {
+  curves = [];
+  drawing = false;
+});
+
+canvas.addEventListener("mousemove", event => {
+  if (drawing) {
+    const point = [event.offsetX, event.offsetY];
+    curves[curves.length - 1].push(point);
+    needsRepaint = true;
+  }
+});
+
+function repaint() {
+  curves.forEach(curve => smoothCurve(curve));
 }
+
+function tick() {
+  if (needsRepaint) {
+    repaint();
+    needsRepaint = false;
+  }
+  window.requestAnimationFrame(tick);
+}
+
+tick();
