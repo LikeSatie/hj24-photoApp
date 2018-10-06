@@ -1,171 +1,234 @@
-const $ = function(selector) {
-  return document.querySelector(selector);
+"use strict";
+
+const pageDimension = {
+  width: document.body.clientWidth,
+  height: document.body.clientHeight
 };
+const fileInput = document.getElementById("fileInput");
+const menu = document.querySelector(".menu");
+const newPic = document.querySelector(".new");
+const drag = document.querySelector(".drag");
+const burger = document.querySelector(".burger");
+const share = document.querySelector(".share");
+const shareTools = document.querySelector(".share-tools");
+const draw = document.querySelector(".draw");
+const comments = document.querySelector(".comments");
+const img = document.querySelector(".current-image");
+const imgLoader = document.querySelector(".image-loader");
+const errorWrap = document.querySelector(".error");
+const errorMessage = document.querySelector(".error__message");
+const url = document.querySelector(".menu__url");
+const copyButton = document.querySelector(".menu_copy");
+const menuToggle = document.querySelector(".menu__toggle-bg");
+const mask = document.querySelector(".mask");
+const shiftMenu = { x: 0, y: 0 };
+let emptyCanvasSize = 0;
+let currentCanvasSize = 0;
+let isDraw = false;
+let needReload = false;
+let imgID = null;
+let bounds;
+let connection;
+let response;
+let countComments;
 
-const $$ = function(selector) {
-  return document.querySelectorAll(selector);
-};
+document.addEventListener("click", () => errorWrap.classList.add("hidden"));
 
-const bodyEl = $("body");
-const wrap = $(".wrap");
-const menu = $(".menu");
-const burger = $(".burger");
-const newPic = $(".new");
-const dragElement = $(".drag");
-const paint = $(".menu__item-title");
-const pictureWrap = $(".picture_wrap");
-const image = $(".current-image");
-const imageLoader = $(".image-loader");
-const imageUrlEl = $(".menu__url");
-const repeatDownloadErr = $(".repeat_download");
-const formatError = $(".format_error");
-const copyButton = $(".menu_copy");
-const comments = $(".comments");
-const commentsEl = $(".comments-tools");
-const commentsSwitchBtn = $(".menu__toggle-bg");
-const commentsOn = $(".menu__toggle");
-const commentsLoader = $(".comment_loader");
-const newCommentForm = $(".new_comment");
-const share = $(".share");
-const shareEl = $(".share-tools");
-const draw = $(".draw");
-const drawEl = $(".draw-tools");
-const eraserEl = $(".menu__eraser");
-const canvasImageDraw = $(".canvas_image_draw");
-const canvasMask = $(".canvas_mask");
+fileInput.addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (file) sendFile(file);
+});
 
-document.addEventListener("DOMContentLoaded", function() {
-  defaultMenuDisplayStyle();
+copyButton.addEventListener("click", () => {
+  url.select();
+  document.execCommand("copy");
+});
 
-  if (performance.navigation.type === 1) {
-    image.src = localStorage.getItem("saveImg");
-    image.style.display = "inline-block";
-  }
+function dataToStorage(title, value) {
+  sessionStorage.setItem(title, value);
+}
 
-  let imageID = getURLParameterByName("id");
-  if (imageID) {
-    window.imageID = imageID;
-    wsConnect();
+function loadMask(url) {
+  return new Promise(resolve => {
+    mask.src = url;
+    mask.addEventListener("load", () => resolve());
+  });
+}
+
+function loadImg(url) {
+  return new Promise(resolve => {
+    img.src = url;
+    img.addEventListener("load", () => resolve());
+  });
+}
+
+function canvasSize() {
+  canvas.removeAttribute("class");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  checkMenuWidth();
+  checkFormsPosition();
+}
+
+function maskSize() {
+  mask.width = img.width;
+  mask.height = img.height;
+}
+
+function checkFormsPosition() {
+  const forms = document.querySelectorAll(".comments__form");
+  const imageHeight = document.querySelector("img").getBoundingClientRect()
+    .height;
+  const imageWidth = document.querySelector("img").getBoundingClientRect()
+    .width;
+  const imageLeft = document.querySelector("img").getBoundingClientRect().x;
+  const imageTop = document.querySelector("img").getBoundingClientRect().y;
+
+  const movingForm = form => {
+    form.style.top = `${parseFloat(form.dataset.aspectTop) * imageHeight +
+      imageTop}px`;
+    form.style.left = `${parseFloat(form.dataset.aspectLeft) * imageWidth +
+      imageLeft}px`;
+  };
+
+  forms.forEach(form => movingForm(form));
+}
+
+document.addEventListener("mousedown", event => {
+  if (event.target.classList.contains("drag")) {
+    movedPiece = event.target.parentNode;
+    bounds = event.target.getBoundingClientRect();
+    shiftMenu.x = event.pageX - bounds.left - window.pageXOffset;
+    shiftMenu.y = event.pageY - bounds.top - window.pageYOffset;
   }
 });
 
-function getURLParameterByName(name) {
-  let url = window.location.href;
-  let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-  let results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return "";
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
+menu.addEventListener("click", event => {
+  const element = event.target;
+  const parent = event.target.parentNode;
+  const currentMode = document.querySelector(
+    ".menu__item[data-state = selected]"
+  );
 
-function defaultMenuDisplayStyle() {
-  menu.style.display = "inline-block";
-  newPic.style.display = "inline-block";
-  burger.style.display = "none";
-  share.style.display = "none";
-  comments.style.display = "none";
-  draw.style.display = "none";
-}
+  if (element.tagName === "LI" || parent.tagName === "LI") {
+    if (
+      parent.classList.contains("burger") ||
+      element.classList.contains("burger")
+    ) {
+      toggleMenu(currentMode, menu, "", "default");
+      currentMode.dataset.state = "";
+      menu.dataset.state = "default";
+      removeEmptyComment();
+      closeAllForms();
+      sendMask(response);
+      checkMenuWidth();
+    }
 
-function menuBiasCorrection(difference, curMax) {
-  if (curMax === parseInt(menu.style.left)) {
-    menu.style.left = parseInt(menu.style.left) - difference + "px";
-  } else if (maxX - difference < parseInt(menu.style.left)) {
-    menu.style.left = curMax - difference + "px";
+    if (parent.classList.contains("new") || element.classList.contains("new")) {
+      fileInput.click();
+    }
+
+    if (
+      parent.classList.contains("comments") ||
+      element.classList.contains("comments")
+    ) {
+      toggleMenu(menu, comments);
+    }
+
+    if (
+      parent.classList.contains("draw") ||
+      element.classList.contains("draw")
+    ) {
+      isDraw = true;
+      toggleMenu(menu, draw);
+    }
+
+    if (
+      parent.classList.contains("share") ||
+      element.classList.contains("share")
+    ) {
+      toggleMenu(menu, share);
+      checkMenuWidth();
+    }
   }
-}
+});
 
-burger.addEventListener("click", burgerMode, false);
-
-function burgerMode() {
-  const maxXBurger = wrap.offsetLeft + wrap.offsetWidth - menu.offsetWidth - 1;
-  if (commentsEl.style.display === "inline-block") {
-    menuBiasCorrection(49, maxXBurger);
-  } else if (drawEl.style.display === "inline-block") {
-    menuBiasCorrection(67, maxXBurger);
-  }
-
-  burgerDisplayStyle();
-}
-
-function burgerDisplayStyle() {
-  burger.style.display = "none";
-  newPic.style.display = "inline-block";
-  share.style.display = "inline-block";
-  shareEl.style.display = "none";
-  comments.style.display = "inline-block";
-  commentsEl.style.display = "none";
-  draw.style.display = "inline-block";
-  drawEl.style.display = "none";
-}
-
-function displayStyleChange(event) {
-  try {
-    burger.style.display = "inline-block";
-    newPic.style.display = "none";
-    share.style.display = "none";
-    shareEl.style.display = "none";
-    comments.style.display = "none";
-    commentsEl.style.display = "none";
-    draw.style.display = "none";
-    drawEl.style.display = "none";
-    event.currentTarget.style.display = "inline-block";
-    event.currentTarget.nextElementSibling.style.display = "inline-block";
-  } catch (err) {
-    share.style.display = "inline-block";
-    shareEl.style.display = "inline-block";
-  }
-}
-
-share.addEventListener("click", shareMode, false);
-
-function shareMode(event) {
-  const maxXShare = wrap.offsetLeft + wrap.offsetWidth - menu.offsetWidth - 1;
-  if (
-    newPic.style.display === "inline-block" &&
-    share.style.display === "none"
-  ) {
-    menuBiasCorrection(567, maxXShare);
+function toggleMenu(pointCne, pointTwo, attrOne, attrTwo) {
+  if (!attrOne) {
+    pointCne.dataset.state = "selected";
   } else {
-    menuBiasCorrection(189, maxXShare);
+    pointCne.dataset.state = attrOne;
   }
 
-  displayStyleChange(event);
+  if (!attrTwo) {
+    pointTwo.dataset.state = "selected";
+  } else {
+    pointTwo.dataset.state = attrTwo;
+  }
 }
 
-comments.addEventListener("click", commentMode, false);
+function checkMenuWidth() {
+  const menuShareWidth =
+    drag.getBoundingClientRect().width +
+    burger.getBoundingClientRect().width +
+    share.getBoundingClientRect().width +
+    parseFloat(getComputedStyle(shareTools).width) +
+    parseFloat(
+      getComputedStyle(shareTools).borderWidth ||
+        getComputedStyle(shareTools).borderLeftWidth
+    ) *
+      2;
 
-function commentMode(event) {
-  displayStyleChange(event);
-  $(".canvas_image_draw").style.display = "none";
+  const menuDefaultWitdh =
+    drag.getBoundingClientRect().width +
+    comments.getBoundingClientRect().width +
+    draw.getBoundingClientRect().width +
+    share.getBoundingClientRect().width +
+    newPic.getBoundingClientRect().width +
+    parseFloat(
+      getComputedStyle(shareTools).borderWidth ||
+        getComputedStyle(shareTools).borderLeftWidth
+    ) *
+      2;
+
+  if (
+    menu.dataset.state === "selected" &&
+    menu.getBoundingClientRect().x + menuShareWidth > pageDimension.width
+  ) {
+    menu.style.left = `${pageDimension.width -
+      menuShareWidth -
+      parseInt(
+        getComputedStyle(menu).borderWidth ||
+          getComputedStyle(shareTools).borderLeftWidth
+      ) *
+        2}px`;
+    checkMenuWidth();
+  }
+
+  if (
+    menu.dataset.state === "default" &&
+    menu.getBoundingClientRect().x + menuDefaultWitdh > pageDimension.width
+  ) {
+    menu.style.left = `${pageDimension.width -
+      menuDefaultWitdh -
+      parseInt(
+        getComputedStyle(menu).borderWidth ||
+          getComputedStyle(shareTools).borderLeftWidth
+      ) *
+        2}px`;
+    checkMenuWidth();
+  }
 }
 
-draw.addEventListener("click", paintMode, false);
-
-function paintMode(event) {
-  displayStyleChange(event);
-  $(".canvas_image_draw").style.display = "";
-  paintModeHandler();
-}
-
-const input = document.createElement("input");
-input.type = "file";
-input.id = "inputFile";
-input.classList.add("hidden_input");
-input.classList.add("hidden");
-input.accept = ".jpg, .png";
-newPic.appendChild(input);
-
-newPic.addEventListener("click", openFileDialog, false);
-
-function openFileDialog() {
-  $(".hidden_input").click();
-}
-
-copyButton.addEventListener("click", copyLinkToClipboard, false);
-
-function copyLinkToClipboard() {
-  let link = imageUrlEl;
-  link.select();
-  document.execCommand("Copy");
+function timeParser(miliseconds) {
+  const date = new Date(miliseconds);
+  const options = {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  };
+  const formatDate = new Intl.DateTimeFormat("ru-RU", options).format;
+  return formatDate(date);
 }
