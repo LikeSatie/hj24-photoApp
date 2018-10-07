@@ -20,6 +20,9 @@ body {
   background: url(../i/back.png) repeat,
               radial-gradient(circle at top center, #707885, #252c36);
   text-align: center;
+  -ms-user-select: none; 
+  -moz-user-select: none; 
+  -webkit-user-select: none;   
   user-select: none;
 }
 
@@ -48,7 +51,7 @@ body {
   cursor: pointer;
 }
 
-.wrap:before, .menu__item:before {
+.menu__item:before {
   content: '';
   display: inline-block;
   vertical-align: middle;
@@ -72,46 +75,22 @@ body {
   margin-right: 0.9rem;
 }
 
-#picture {
+.current-image {
+  max-width: 70%;
+  max-height: 100%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: block;
-  box-shadow: 1px 1.732px 10px #000000;
-}
-
-#imageDraw {
-  left:0px;
-  top:0px;
-  z-index: 50;
-  position: absolute;
-}
-
-#mask {
-  left: 0px;
-  top: 0px;
-  position: absolute;
-  z-index: 49;
-}
-
-.current-image {
+  box-shadow: 0.1rem 0.17rem 1rem #000000;
   z-index: 0;
-  display: none;
-}
-
-.hidden {
-  display: none;
-}
-
-.visible {
-  display: inline-block;
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~ иконки на панели ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 .drag {
-  width: 21px;
+  width: 2.1rem;
   padding: 0;
   background-color: #7b8c9c;
   background: url(../i/dotes.png) no-repeat center #7b8c9c;
@@ -120,8 +99,8 @@ body {
 
 .burger {
   padding: 0 2.1rem;
-  border-left: 1px solid #51606e;
-  border-right: 1px solid #51606e;
+  border-left: 0.1rem solid #51606e;
+  border-right: 0.1rem solid #51606e;
 }
 
 .burger-icon {
@@ -228,7 +207,7 @@ body {
   z-index: 10;
 }
 
-.menu__color, .menu__eraser-wrap, .menu__eraser-wrap_active, .menu__eraser, .menu__url, .menu_copy, .menu__toggle, .menu__toggle-bttn {
+.menu__color, .menu__url, .menu_copy, .menu__toggle, .menu__toggle-bttn {
   display: inline-block;
   vertical-align: middle;
 }
@@ -253,7 +232,7 @@ body {
   margin-left: -1rem;
 }
 
-.menu__color + span { 
+.menu__color + span {
   position: relative;
   display: inline-block;
   vertical-align: middle;
@@ -293,72 +272,6 @@ body {
   background-color: #b36ae0;
 }
 
-.menu__eraser-wrap {
-  position: relative;
-  height: 100%;
-  width: 5.7rem;
-  padding-right: 0.4rem;
-}
-
-.menu__eraser-wrap_active {
-  position: relative;
-  height: 100%;
-  width: 5.7rem;
-  padding-right: 0.4rem;
-  background-color: #51606e;
-}
-
-.menu__eraser {
-  position: relative;
-  width: 2.4rem;
-  height: 2.5rem;
-  background-image: url(../i/spritesheet.png);
-  background-position: -110px 62px;
-}
-
-.menu__eraser-wrap:hover .menu__eraser {
-  background-position: -110px 37px;
-}
-
-.menu__eraser-wrap:before {
-  content: '';
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-
-.menu__eraser-wrap_active:before {
-  content: '';
-  display: inline-block;
-  vertical-align: middle;
-  height: 100%;
-}
-
-.menu__eraser-wrap:after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 1.6rem;
-  display: inline-block;
-  width: 0.1rem;
-  height: 3rem;
-  background-color: #51606e;
-}
-
-.menu__eraser-wrap_active:after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 1.6rem;
-  display: inline-block;
-  width: 0.1rem;
-  height: 3rem;
-  background-color: #51606e;
-}
-
-.menu__eraser-wrap_active .menu__eraser {
-  background-position: -110px 37px;
-}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ комментировать ~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -448,174 +361,13 @@ body {
   z-index: 0;
 }
 
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ поделиться ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.menu__url {
-  width: 32.8rem;
-  height: 2.8rem;
-  padding: 0 1rem;
-  background-color: #485561;
-  border: 0.1rem solid #9fb0c1;
-  color: #fff;
-}
-
-.menu_copy {
-  width: 11.2rem;
-  height: 2.8rem;
-  margin-left: 1.7rem;
-  background-color: #455667;
-  color: #a5b7c8;
-  border: 0.1rem solid #9fb0c1;
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1rem;
-  cursor: pointer;
-}
-
-.menu_copy:hover {
-  background-color: #5f7488;
-}
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ переключения ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ initial ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.menu[data-state="initial"] > .menu__item {
-  display: none;
-}
-
-.menu[data-state="initial"] > .menu__item.drag, .menu[data-state="initial"] > .menu__item.new, .menu[data-state="initial"] > .menu__item.burger {
-  display: inline-block;
-}
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ default ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.menu[data-state="default"] > .menu__item.burger {
-  display: none;
-}
-
-.menu[data-state="default"] > .mode {
-  display: inline-block;
-}
-
-.menu[data-state="default"] > .tools {
-  display: none;
-}
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ selected ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.menu[data-state="selected"] > .mode {
-  display: none;
-}
-
-.tool {
-  display: none;
-}
-
-.menu[data-state="selected"] > .menu__item[data-state="selected"], .menu__item[data-state="selected"] + .tool {
-  display: inline-block;
-}
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ ошибка ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.error {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);  
-  max-width: 60rem;
-  background-color: #384654;
-  box-shadow: 1px 1.732px 10px #000000;
-  padding: 6rem 8rem;
-  color: #b5c6d6;
-}
-
-.error__header {
-  font-size: 3rem;
-  margin-bottom: 2rem;
-}
-
-.error__message {
-  font-size: 1.5rem;
-  line-height: 130%;
-}
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ прелоадер ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-.image-loader {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);  
-  max-width: 60rem;
-  z-index: 10;
-  color: #fff;
-  text-shadow: 0 0 0.2rem #000;
-}
- 
-.image-loader__message {
-  font-size: 2rem;
-  margin-top: 2rem;
-}
-
-.loader {
-  height: 3rem;
-  width: 100%; 
-  min-width: 16.2rem;
-  text-align: center;
-}
-
-.loader span {
-  position: relative;
-  top: 50%;
-  display: inline-block;
-  vertical-align: top;  
-  width: 1rem;
-  height: 1rem;
-  margin: 0 0.5rem;
-  transform: translateY(-50%);
-  background: #ffffff;
-}
-
-.image-loader .loader span {
-  width: 2rem;
-  height: 2rem;
-}
-
-.loader span:nth-child(1) {
-  animation: pulse 1s infinite 0.2s;
-}
-.loader span:nth-child(2) {
-  animation: pulse 1s infinite 0.4s;
-}
-.loader span:nth-child(3) {
-  animation: pulse 1s infinite 0.6s;
-}
-.loader span:nth-child(4) {
-  animation: pulse 1s infinite 0.8s;
-}
-.loader span:nth-child(5) {
-  animation: pulse 1s infinite 1s;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    /*opacity: 1;*/
-    background: #fff;
-  }
-  50% {
-    /*opacity: 0.2;*/
-    background: #6e7684;
-  }
-}
-
 /* ~~~~~~~~~~~~~~~~~~~~ форма комментария ~~~~~~~~~~~~~~~~~~~~~~ */
 
 .comments__form {
   position: absolute;
   top: calc(4 * var(--menu-top));
-  left: calc(3 * var(--menu-left));  
+  left: calc(3 * var(--menu-left));
+  z-index: 1;
 }
 
 .comments__marker {
@@ -697,6 +449,10 @@ body {
   font-family: inherit;
   font-size: 1.3rem;
   color: #8b9cad;
+  -ms-user-select: text; 
+  -moz-user-select: text; 
+  -webkit-user-select: text;   
+  user-select: text;  
 }
 
 .comments__close, .comments__submit {
@@ -749,4 +505,190 @@ body {
 
 .comments__body::-webkit-scrollbar-thumb{
   background-color: #dae2ea;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ поделиться ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.menu__url {
+  width: 32.8rem;
+  height: 2.8rem;
+  padding: 0 1rem;
+  background-color: #485561;
+  border: 0.1rem solid #9fb0c1;
+  color: #fff;
+  -ms-user-select: text; 
+  -moz-user-select: text; 
+  -webkit-user-select: text;   
+  user-select: text;  
+}
+
+.menu_copy {
+  width: 11.2rem;
+  height: 2.8rem;
+  margin-left: 1.7rem;
+  background-color: #455667;
+  color: #a5b7c8;
+  border: 0.1rem solid #9fb0c1;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+}
+
+.menu_copy:hover {
+  background-color: #5f7488;
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ ошибка ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  
+  max-width: 60rem;
+  color: #fff;
+  text-shadow: 0 0 0.2rem #000;
+}
+
+.error__header {
+  font-size: 4rem;
+}
+
+.error__message {
+  font-size: 2rem;
+  margin-top: 2rem;
+  line-height: 130%;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ прелоадер ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.image-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  
+  max-width: 60rem;
+  z-index: 10;
+  color: #fff;
+  text-shadow: 0 0 0.2rem #000;
+}
+
+.image-loader__message {
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
+.loader {
+  height: 3rem;
+  width: 100%; 
+  min-width: 16.2rem;
+  text-align: center;
+}
+
+.loader span {
+  position: relative;
+  top: 50%;
+  display: inline-block;
+  vertical-align: top;  
+  width: 1rem;
+  height: 1rem;
+  margin: 0 0.5rem;
+  transform: translateY(-50%);
+  background: #ffffff;
+}
+
+.image-loader .loader span {
+  width: 2rem;
+  height: 2rem;
+}
+
+.loader span:nth-child(1) {
+  animation: pulse 1s infinite 0.2s;
+}
+.loader span:nth-child(2) {
+  animation: pulse 1s infinite 0.4s;
+}
+.loader span:nth-child(3) {
+  animation: pulse 1s infinite 0.6s;
+}
+.loader span:nth-child(4) {
+  animation: pulse 1s infinite 0.8s;
+}
+.loader span:nth-child(5) {
+  animation: pulse 1s infinite 1s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    background: #fff;
+  }
+  50% {
+    background: #6e7684;
+  }
+}
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ переключения ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ initial ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.menu[data-state="initial"] > .menu__item {
+  display: none;
+}
+
+.menu[data-state="initial"] > .menu__item.drag, .menu[data-state="initial"] > .menu__item.new, .menu[data-state="initial"] {
+  display: inline-block;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ default ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.menu[data-state="default"] > .menu__item.burger {
+  display: none;
+}
+
+.menu[data-state="default"] > .mode {
+  display: inline-block;
+}
+
+.menu[data-state="default"] > .tools {
+  display: none;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~ selected ~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.menu[data-state="selected"] > .mode {
+  display: none;
+}
+
+.tool {
+  display: none;
+}
+
+.menu[data-state="selected"] > .menu__item[data-state="selected"], .menu__item[data-state="selected"] + .tool {
+  display: inline-block;
+}
+
+/* собственные стили */
+
+.hidden {
+  display: none;
+}
+
+#canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  z-index: 0;
+}
+
+.mask {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0.1rem 0.17rem 1rem #000000;
+  z-index: 0;
 }
