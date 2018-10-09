@@ -29,37 +29,27 @@ let connection;
 let response;
 let countComments;
 
-// скрытие описания ошибки
-
 document.addEventListener('click', () => errorWrap.classList.add('hidden'));
 
-// выбор изображения
-
 fileInput.addEventListener('change', event => {
-    console.log(`Файл выбран. Функция onSelectFiles(). Запускаю функцию sendFile(file)...`);
+//    console.log(`Файл выбран. Функция onSelectFiles(). Запускаю функцию sendFile(file)...`);
     const file = event.target.files[0];
     if (file) sendFile(file);
 });
 
-// копирование ссылки в буфер обмена
-
 copyButton.addEventListener('click', () => {
     url.select();
 document.execCommand('copy');
-console.log(`Текст скопирован в буфер обмена...`);
+//console.log(`Текст скопирован в буфер обмена...`);
 });
-
-// Работа со Storage 
 
 function dataToStorage(title, value) {
     sessionStorage.setItem(title, value);
-    console.log("TCL: dataToStorage -> sessionStorage", sessionStorage);
+//    console.log("TCL: dataToStorage -> sessionStorage", sessionStorage);
 }
 
-// загрузка картинки
-
 function loadMask(url) {
-    console.log('TCL: loadMask -> url', url);
+//    console.log('TCL: loadMask -> url', url);
     return new Promise(resolve => {
         mask.src = url;
         mask.addEventListener('load', () => resolve())
@@ -67,17 +57,15 @@ function loadMask(url) {
 }
 
 function loadImg(url) {
-    console.log('TCL: loadImg -> url', url);
+//    console.log('TCL: loadImg -> url', url);
     return new Promise(resolve => {
         img.src = url;
         img.addEventListener("load", () => resolve());
     });
 }
 
-// определение размера канваса
-
 function canvasSize() {
-    console.log("Изображение загрузилось. Меняю размер ХОЛСТА...");
+//    console.log("Изображение загрузилось. Меняю размер ХОЛСТА...");
     canvas.removeAttribute('class');
     canvas.width = img.width;
     canvas.height = img.height;
@@ -85,19 +73,15 @@ function canvasSize() {
     checkFormsPosition();
 }
 
-// определение размера маски
-
 function maskSize() {
-    console.log('Изображение загрузилось. Меняю размер МАСКИ...');
-    console.log("TCL: maskSize -> img.width", img.width);
+//    console.log('Изображение загрузилось. Меняю размер МАСКИ...');
+//    console.log("TCL: maskSize -> img.width", img.width);
     mask.width = img.width;
     mask.height = img.height;
 }
 
-// уточнение положения форм с комментариями относительно картинки
-
 function checkFormsPosition() {
-    console.log("Запущена функция checkFormsPosition...");
+//    console.log("Запущена функция checkFormsPosition...");
     const forms = document.querySelectorAll(".comments__form");
     const imageHeight = document.querySelector("img").getBoundingClientRect().height;
     const imageWidth = document.querySelector("img").getBoundingClientRect().width;
@@ -112,8 +96,6 @@ function checkFormsPosition() {
     forms.forEach(form => movingForm(form));
 }
 
-// перемещение меню
-
 document.addEventListener('mousedown', event => {
     if(event.target.classList.contains('drag')) {
         movedPiece = event.target.parentNode;
@@ -122,8 +104,6 @@ document.addEventListener('mousedown', event => {
         shiftMenu.y = event.pageY - bounds.top - window.pageYOffset;
     }
 });
-
-// переключение режимов
 
 menu.addEventListener('click', event => {
     const element = event.target;
@@ -175,8 +155,6 @@ function toggleMenu(pointCne, pointTwo, attrOne, attrTwo) {
     }
 }
 
-// Проверка раскрытия меню
-
 function checkMenuWidth() {
     const menuShareWidth = drag.getBoundingClientRect().width + burger.getBoundingClientRect().width + share.getBoundingClientRect().width + parseFloat(getComputedStyle(shareTools).width) + parseFloat(getComputedStyle(shareTools).borderWidth || getComputedStyle(shareTools).borderLeftWidth) * 2;
 
@@ -192,8 +170,6 @@ function checkMenuWidth() {
         checkMenuWidth();
     }
 }
-
-// форматирование даты
 
 function timeParser(miliseconds) {
     const date = new Date(miliseconds);
