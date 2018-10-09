@@ -1,8 +1,5 @@
 'use strict';
 
-// Здесь расписываем логику рисования Создаём объект с выбором цвета
-
-//window.addEventListener('resize', canvasSize);
 window.addEventListener('resize', maskSize);
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -12,11 +9,7 @@ let color = {'red': '#ea5d56', 'yellow': '#f3d135', 'green': '#6cbe47', 'blue': 
 let drawing = false;
 let needsRepaint = false;
 
-// Создаём событие удаления изображения по двойному клику
-
 canvas.addEventListener('dblclick', clearCanvas);
-
-// Отслеживаем событие выбора цвета
 
 colorButtons.addEventListener('click', event => {
     if (event.target.name === 'color') {
@@ -26,23 +19,17 @@ colorButtons.addEventListener('click', event => {
     }
 });
 
-// Очищаем изображение по двойному клику
-
 function clearCanvas() {
-    console.log(`Запущена функция clearCanvas()`);
+//    console.log(`Запущена функция clearCanvas()`);
     curves = [];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     needsRepaint = true;
 }
 
-// Выбираем цвет
-
 function getColor() {
     const currentColor = document.querySelector('.menu__color:checked');
     return color[currentColor.value];
 }
-
-// Рисуем и задаём толщину линии и цвет
 
 function smoothCurveBetween (p1, p2) {
     const cp = p1.map((coord, idx) => (coord + p2[idx]) / 2);
@@ -50,8 +37,6 @@ function smoothCurveBetween (p1, p2) {
     ctx.strokeStyle =  getColor();
     ctx.quadraticCurveTo(...p1, ...cp);
 }
-
-// Функция канвас
 
 function smoothCurve(points) {
     ctx.beginPath();
@@ -64,8 +49,6 @@ function smoothCurve(points) {
     ctx.stroke();
 }
 
-// Отслеживаем перемещение мыши и запоминаем
-
 canvas.addEventListener("mousedown", event => {
     if (draw.dataset.state === 'selected') {
         const curve = [];
@@ -76,21 +59,15 @@ canvas.addEventListener("mousedown", event => {
     }
 });
 
-// Очищаем массив с данными при отпускании клавиши мышки, чтобы продолжить рисовать с любого места
-
 canvas.addEventListener("mouseup", () => {
     curves = [];
     drawing = false;
 });
 
-// Так же очищаем массив с данными при покидании мышки, зоны холста чтобы начать рисовать с любого места
-
 canvas.addEventListener("mouseleave", () => {
     curves = [];
     drawing = false;
 });
-
-// Записываем координаты
 
 canvas.addEventListener("mousemove", event => {
     if (drawing) {
@@ -100,13 +77,9 @@ canvas.addEventListener("mousemove", event => {
     }
 });
 
-// Передаём данные для отрисовки
-
 function repaint () {
     curves.forEach((curve) => smoothCurve(curve));
 }
-
-// Разрешаем отрисовку
 
 function tick () {
     if(needsRepaint) {
