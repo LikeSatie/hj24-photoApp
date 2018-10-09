@@ -1,15 +1,10 @@
 'use strict';
 
-// создаём обработку кликов и разбиваем логику по функциям-обработчикам
-
 canvas.addEventListener("click", createNewComment);
-// canvas.addEventListener('click', createComments);
 document.querySelector('.app').addEventListener('click', messageHandler);
 document.addEventListener('click', markerClick);
 document.addEventListener('click', closeForm);
 menuToggle.addEventListener('click', toggleComments);
-
-// переключатель видимости комментариев Передаём событие, включаем и выключаем комментарии. В константы запичываем путь к штмл элементам, потом делаем проверку, если чекед, то удаляем и добавляем чекед, пробегаемся итератором по комментам и удаляем свойство хидден и запускаем функцию закрытия всех форм, в остальных случаях запускаем удаление пустой формы из дерева штмл, добавляем чекед у соответствующих атрибутов, пробегаемся итератором по формам комментов и добавляем класс хидден
 
 function toggleComments(event) {
     const commentsForm = document.querySelectorAll('.comments__form');
@@ -23,7 +18,7 @@ function toggleComments(event) {
             comment.classList.remove('hidden');
         }
         closeAllForms();
-        console.log('toggleComments() : Комментарии Включены!');
+//        console.log('toggleComments() : Комментарии Включены!');
     } else {
         removeEmptyComment();
         commentsOn.removeAttribute('checked');
@@ -35,11 +30,9 @@ function toggleComments(event) {
         if (document.querySelector('.comments__marker-checkbox') && !document.querySelector('.app').lastChild.querySelector('.comments__marker-checkbox[type]')){
             document.querySelector('.app').removeChild(document.querySelector('.app').lastChild);
         }
-        console.log('toggleComments() : Комментарии выключены!');
+//        console.log('toggleComments() : Комментарии выключены!');
     }
 }
-
-// показ/скрытие формы Так же отслеживаем событие, записываем его в константу и производим обработку, если есть клик, то запускаем функцию очистки формы и добавляем дисплейблок форме, т.е. делаем коммент видимым, или убираем видимость. Далее идут обработчики форм
 
 function markerClick(event) {
     const bodyForm = event.target.nextElementSibling;
@@ -58,55 +51,45 @@ function markerClick(event) {
     }
 }
 
-// удаляет пустую форму из DOM Ничего не принимает, запускает обработку. Записываем в константу путь новой форме, проверяем, если она есть, то удаляем её из корня
-
 function removeEmptyComment() {
-    console.log(`Запущена функция removeEmptyComment()`);
+//    console.log(`Запущена функция removeEmptyComment()`);
     const isNewComment = document.getElementsByClassName('comments__form new')[0];
-    console.log(isNewComment);
+//    console.log(isNewComment);
     if (isNewComment) {
         document.querySelector('.app').removeChild(isNewComment);
     }
 }
 
-// закрытие текущей формы Отслеживает событие и если оно происходит на классе закрыть комменты, ставит ситль дисплейноне
-
 function closeForm(event) {
     if (event.target.className === 'comments__close') {
-        console.log(`Запущена функция closeForm()`);
+//        console.log(`Запущена функция closeForm()`);
         event.target.parentNode.style.display = 'none';
     }
 }
 
-// закрытие всех форм В константу записываем путь к телу комментов, пробегаемся итератором и ставим ситль диспелйнон
-
 function closeAllForms() {
-    console.log(`Запущена функция closeAllForms()`);
+//    console.log(`Запущена функция closeAllForms()`);
     const otherForms = document.querySelectorAll('.comments__body');
     for (const body of otherForms) {
         body.style.display = 'none';
     }
 }
 
-// функция удаления всех существующих форм из DOM В константу путь к формам, пробегаемся итератором и удаляем их
-
 function clearForms() {
     if (document.querySelector('.comments__form')) {
-        console.log(`Запущена функция clearForms()`);
+//        console.log(`Запущена функция clearForms()`);
         const forms = document.querySelectorAll('.comments__form');
-        console.log("TCL: clearForms -> forms", forms);
+//        console.log("TCL: clearForms -> forms", forms);
         for (const form of forms) {
             document.querySelector('.app').removeChild(form);
         }
     }
 }
 
-// функция создания новой (пустой) формы Отслеживаем событие. Записываем в константу путь к чеккед, делаем проверку состояния кнопки и очищаем комменты и формы, после чего создаём новое дерево в дом штмл
-
 function createNewComment(event) {
     const isCommentsOn = document.getElementById('comments-on').checked;
     if (comments.dataset.state === 'selected' && isCommentsOn) {
-        console.log(`Запущена функция createNewComment()`);
+//        console.log(`Запущена функция createNewComment()`);
         const app = document.querySelector('.app');
         removeEmptyComment();
         closeAllForms();
@@ -165,11 +148,9 @@ function createNewComment(event) {
     }
 }
 
-// обработка ввода нового комментария и создание объекта с параметрами нового комментария Отслеживает событие. Если событие происходит в поле ввода текста, первым делом сбрасываем стандартные действия браузера, записываем все едйствия в константы, даем добро на перезагрузку и отправляем наши данные (картинка, бъект с сообщением и расположением текста в форме и форма) на сервер
-
 function messageHandler(event) {
     if (event.target.className === 'comments__submit') {
-    console.log(`Запущена функция messageHandler()`);
+//    console.log(`Запущена функция messageHandler()`);
         event.preventDefault();
         const element = event.target.parentNode.querySelector('textarea');
         const form = event.target.parentNode.parentNode;
@@ -192,13 +173,11 @@ function messageHandler(event) {
     }
 }
 
-// создание массива с коментариями, полученными с сервера Принимает комментарии. Создаём пустой массви, пробегаемся по комментариям итератором и пушим их в массив. После очифаем формы и создаём форму с комментарием
-
 function createCommentsArray(comments) {
-    console.log(`Запущена функция createCommentsArray()`);
+//    console.log(`Запущена функция createCommentsArray()`);
     const commentArray = [];
 
-    console.log('TCL: createCommentsArray -> commentArray', commentArray);
+//    console.log('TCL: createCommentsArray -> commentArray', commentArray);
 
     for (const comment in comments) {
         commentArray.push(comments[comment]);
@@ -207,11 +186,9 @@ function createCommentsArray(comments) {
     createCommentForm(commentArray);
 }
 
-// наполнение DOM комментариями Пробегаемся итератором по комментариям, что запушили в функции выше и распихиваем по дереву дома. Проставляем дату и вермя комментария. Стилем выставляем расположение комментария
-
 function createCommentForm(comments) {
-    console.log('TCL: createCommentForm -> comments', comments);
-    console.log(`Запущена функция createCommentForm()`);
+//    console.log('TCL: createCommentForm -> comments', comments);
+//    console.log(`Запущена функция createCommentForm()`);
     const app = document.querySelector('.app');
 
     const imageHeight = document.querySelector('img').getBoundingClientRect().height;
@@ -220,7 +197,7 @@ function createCommentForm(comments) {
     const imageTop = document.querySelector('img').getBoundingClientRect().y;
 
     for (let comment of comments) {
-        console.log('TCL: createCommentForm -> comment', comment);
+//        console.log('TCL: createCommentForm -> comment', comment);
         closeAllForms();
 
         const form = document.createElement('div');
@@ -304,11 +281,9 @@ function createCommentForm(comments) {
     }
 }
 
-// добавления комментария в существующую форму
-
 function appendComment(element, target) {
-    console.log(target)
-    console.log(`Запущена функция appendComment()`);
+//    console.log(target)
+//    console.log(`Запущена функция appendComment()`);
     const comments = target.querySelector('.comments__body').querySelectorAll('.comment');
     closeAllForms();
     if (target) {
@@ -317,8 +292,6 @@ function appendComment(element, target) {
     }
     needReload = false;
 }
-
-    // переписал создание новой формы комментариев
 
     function createComments(event) {
         const isCommentsOn = document.getElementById('comments-on').checked;
@@ -330,7 +303,7 @@ function appendComment(element, target) {
             emptyFragment.appendChild(commentTemplateEngine(commentTemplate(event)));
             app.appendChild(emptyFragment);
             const newComment = document.querySelector('.comments__form new');
-            console.log(newComment)
+ //           console.log(newComment)
             newComment.querySelector('.comments__close')
                 .addEventListener('click', removeEmptyComment);
             newComment.style.left = event.pageX + "px";
