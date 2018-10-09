@@ -1,21 +1,15 @@
 'use strict';
 
-// Создаём обработчики событий
-
 document.body.addEventListener('dragover', event => event.preventDefault());
 document.body.addEventListener('drop', onFilesDrop);
 document.addEventListener('mousemove', dragStart, false);
 let movedPiece = null;
-
-// После перетаскивания элемента, стираем значения
 
 document.addEventListener('mouseup', () => {
     if (movedPiece) {
         movedPiece = null;
     }
 });
-
-// Отслеживаем перетаскиваемый элемент
 
 function dragStart(event) {
     if (movedPiece) {
@@ -32,8 +26,6 @@ function dragStart(event) {
     }
 }
 
-// Закидываем изображение на сервак и загружаем на экране
-
 function onFilesDrop(event) {
     console.log(`Файл выбран. Функция onFilesDrop()`);
     event.preventDefault();
@@ -42,6 +34,6 @@ function onFilesDrop(event) {
         sendFile(files[0]);
     } else {
         errorWrap.classList.remove('hidden');
-        errorMessage.innerText = 'Чтобы загрузить новое изображение, пожалуйста воспользуйтесь пунктом "Загрузить новое" в меню.';
+        errorMessage.innerText = 'Чтобы загрузить новое изображение, воспользуйтесь пунктом "Загрузить новое" в меню.';
     }
 }
