@@ -1,98 +1,227 @@
 "use strict";
 
-window.addEventListener("resize", maskSize);
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
-const colorButtons = document.querySelector(".draw-tools");
-let curves = [];
-let color = {
-  red: "#ea5d56",
-  yellow: "#f3d135",
-  green: "#6cbe47",
-  blue: "#53a7f5",
-  purple: "#b36ade"
-};
-let drawing = false;
-let needsRepaint = false;
-
-canvas.addEventListener("dblclick", clearCanvas);
-
-colorButtons.addEventListener("click", event => {
-  if (event.target.name === "color") {
-    const currentColor = document.querySelector(".menu__color[checked]");
-    currentColor.removeAttribute("checked");
-    event.target.setAttribute("checked", "");
+function sendFile(file) {
+  // console.log(`Запущена функция sendFile()`);
+  errorWrap.classList.add("hidden");
+  const imageTypeRegExp = /^image\/jpg|jpeg|png/;
+  if (imageTypeRegExp.test(file.type)) {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append("title", file.name);
+    formData.append("image", file);
+    xhr.open("POST", "https://neto-api.herokuapp.com/pic/");
+    xhr.addEventListener(
+      "loadstart",
+      () => (imgLoader.style.display = "block")
+    );
+    xhr.addEventListener("loadend", () => (imgLoader.style.display = "none"));
+    xhr.addEventListener("error", () => {
+      errorWrap.classList.remove("hidden");
+      errorMessage.innerText = `Произошла ошибка! Повторите попытку позже... `;
+    });
+    xhr.addEventListener("load", () => {
+      if (xhr.status === 200) {
+        const result = JSON.parse(xhr.responseText);
+        // console.log(`Изображение опубликовано! Дата публикации: ${timeParser(result.timestamp)}`);
+        if (connection) {
+          connection.close(1000, "Работа закончена");
+        }
+        dataToStorage("id", result.id);
+        dataToStorage("url", result.url);
+        url.value = `${location.origin + location.pathname}?${
+          sessionStorage.id
+        }`;
+        mask.src = "";
+        mask.classList.add("hidden");
+        loadImg(result.url)
+          .then(() => canvasSize())
+          .then(() => maskSize());
+        menu.dataset.state = "default";
+        clearForms();
+        getWSConnect();
+      } else {
+        errorWrap.classList.remove("hidden");
+        errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+          xhr.statusText
+        }... Повторите попытку позже... `;
+      }
+    });
+    xhr.send(formData);
+  } else {
+    errorWrap.classList.remove("hidden");
+    errorMessage.innerText =
+      "Неверный формат файла. Пожалуйста, выберите изображение в формате .jpg или .png.";
   }
-});
-
-function clearCanvas() {
-  // console.log(`Запущена функция clearCanvas()`);
-  curves = [];
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  needsRepaint = true;
 }
 
-function getColor() {
-  const currentColor = document.querySelector(".menu__color:checked");
-  return color[currentColor.value];
+function getWSConnect() {
+  connection = new WebSocket(
+    `wss://neto-api.herokuapp.com/pic/${sessionStorage.id}`
+  );
+  // console.log('TCL: getWSConnect -> sessionStorage', sessionStorage);
+  connection.addEventListener("open", () =>
+    console.log("Вебсокет-соединение открыто...")
+  );
+  connection.addEventListener("message", event =>
+    sendMask(JSON.parse(event.data))
+  );
+  connection.addEventListener("close", event =>
+    console.log("Вебсокет-соединение закрыто")
+  );
+  connection.addEventListener("error", error => {
+    errorWrap.classList.remove("hidden");
+    errorMessage.innerText = `WebSocket: произошла ошибка ! Повторите попытку позже... `;
+  });
 }
 
-function smoothCurveBetween(p1, p2) {
-  const cp = p1.map((coord, idx) => (coord + p2[idx]) / 2);
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = getColor();
-  ctx.quadraticCurveTo(...p1, ...cp);
+if (sessionStorage.id) {
+  // console.log("TCL: sessionStorage.id)", sessionStorage.id);
+  // console.log(`Перехожу по ссылке ${`\`${location.origin + location.pathname}?${sessionStorage.id}\``}`);
+  getShareData(location.search.replace(/^\?/, ""));
 }
 
-function smoothCurve(points) {
-  ctx.beginPath();
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
-  ctx.moveTo(...points[0]);
-  for (let i = 1; i < points.length - 1; i++) {
-    smoothCurveBetween(points[i], points[i + 1]);
+if (location.search) {
+  // console.log(`Перехожу по ссылке ${`\`${location.origin + location.pathname}?${imgID || sessionStorage.id}\``}`);
+  getShareData(location.search.replace(/^\?/, ""));
+}
+
+function getShareData(id) {
+  // console.log("TCL: getShareData -> sessionStorage.id", id);
+  // console.log(`Запущена функция getShareData()`);
+  const xhr = new XMLHttpRequest();
+  xhr.open(
+    "GET",
+    `https://neto-api.herokuapp.com/pic/${sessionStorage.id || id}`
+  );
+  xhr.addEventListener("load", () => {
+    if (xhr.status === 200) {
+      loadShareData(JSON.parse(xhr.responseText));
+    } else {
+      errorWrap.classList.remove("hidden");
+      errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+        xhr.statusText
+      }... Повторите попытку позже... `;
+    }
+  });
+  xhr.send();
+}
+
+function loadShareData(result) {
+  // console.log('TCL: loadShareData -> result', result);
+  // console.log(`loadShareData() : Изображение получено! Дата публикации: ${timeParser(result.timestamp)}`);
+
+  toggleMenu(menu, comments);
+  dataToStorage("id", result.id);
+  dataToStorage("url", result.url);
+  loadImg(result.url).then(() => canvasSize());
+
+  url.value = `${location.href}`;
+  if (result.comments) {
+    createCommentsArray(result.comments);
   }
-  ctx.stroke();
+  if (result.mask) {
+    mask.src = result.mask;
+    mask.classList.remove("hidden");
+    loadMask(result.mask)
+      .then(() => loadImg(result.url))
+      .then(() => maskSize());
+  }
+  if (document.getElementById("comments-off").checked) {
+    const commentsForm = document.querySelectorAll(".comments__form");
+    for (const comment of commentsForm) {
+      comment.classList.add("hidden");
+    }
+  }
+  getWSConnect();
+  closeAllForms();
 }
 
-canvas.addEventListener("mousedown", event => {
-  if (draw.dataset.state === "selected") {
-    const curve = [];
-    drawing = true;
-    curve.push([event.offsetX, event.offsetY]);
-    curves.push(curve);
-    needsRepaint = true;
-  }
-});
-
-canvas.addEventListener("mouseup", () => {
-  curves = [];
-  drawing = false;
-});
-
-canvas.addEventListener("mouseleave", () => {
-  curves = [];
-  drawing = false;
-});
-
-canvas.addEventListener("mousemove", event => {
-  if (drawing) {
-    const point = [event.offsetX, event.offsetY];
-    curves[curves.length - 1].push(point);
-    needsRepaint = true;
-  }
-});
-
-function repaint() {
-  curves.forEach(curve => smoothCurve(curve));
+function sendNewComment(id, comment, target) {
+  // console.log('TCL: sendNewComment -> id', id);
+  // console.log('TCL: sendNewComment -> comment', comment);
+  // console.log(`Запущена функция sendNewComment()`);
+  const xhr = new XMLHttpRequest();
+  const body =
+    "message=" +
+    encodeURIComponent(comment.message) +
+    "&left=" +
+    comment.left +
+    "&top=" +
+    comment.top;
+  xhr.open("POST", `https://neto-api.herokuapp.com/pic/${id}/comments`, true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.addEventListener("loadstart", () =>
+    target.querySelector(".loader").classList.remove("hidden")
+  );
+  xhr.addEventListener("loadend", () =>
+    target.querySelector(".loader").classList.add("hidden")
+  );
+  xhr.addEventListener("load", () => {
+    if (xhr.status === 200) {
+      // console.log('Комментарий был отправвлен!');
+      const result = JSON.parse(xhr.responseText);
+      createCommentsArray(result.comments);
+      needReload = false;
+    } else {
+      errorWrap.classList.remove("hidden");
+      errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+        xhr.statusText
+      }... Повторите попытку позже... `;
+    }
+  });
+  xhr.send(body);
 }
 
-function tick() {
-  if (needsRepaint) {
-    repaint();
-    needsRepaint = false;
+function sendMask(response) {
+  // console.log('TCL: sendMask -> response', response);
+  // console.log(`Запущена функция sendMask()`);
+  if (!response) {
+    if (isDraw) {
+      canvas.toBlob(blob => {
+        currentCanvasSize = blob.size;
+        // console.log('TCL: sendMask -> emptyCanvasSize', emptyCanvasSize);
+        // console.log('TCL: sendMask -> currentCanvasSize', currentCanvasSize);
+        if (currentCanvasSize !== emptyCanvasSize) {
+          connection.send(blob);
+        }
+      });
+      isDraw = false;
+    } else {
+      if (img.naturalHeight !== 0) {
+        canvas.toBlob(blob => (emptyCanvasSize = blob.size));
+      }
+    }
+  } else {
+    if (response.event === "mask") {
+      // console.log('Событие mask...');
+      mask.classList.remove("hidden");
+      clearCanvas();
+      loadMask(response.url)
+        .then(() => maskSize())
+        .then(() => console.log("Mask loaded and resized!"));
+    } else if (response.event === "comment") {
+      // console.log('Событие comment...');
+      pullComments(response);
+    } else {
+      loadImg(response.pic.url).then(() => canvasSize());
+    }
   }
-  window.requestAnimationFrame(tick);
 }
 
-tick();
+function pullComments(result) {
+  // console.log(`Запущена функция pullComments()`);
+  countComments = 0;
+  const countCurrentComments =
+    document.getElementsByClassName("comment").length -
+    document.getElementsByClassName("comment load").length;
+  needReload = countComments === countCurrentComments ? false : true;
+  if (result) {
+    createCommentForm([result.comment]);
+  }
+  if (document.getElementById("comments-off").checked) {
+    const commentsForm = document.querySelectorAll(".comments__form");
+    for (const comment of commentsForm) {
+      comment.classList.add("hidden");
+    }
+  }
+}
