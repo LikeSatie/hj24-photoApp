@@ -33,10 +33,10 @@ function closeForm(event) {
   }
 }
 
-function closeForm(event) {
-  if (event.target.className === 'comments__close') {
-    // console.log(`Запущена функция closeForm()`);
-    event.target.parentNode.style.display = 'none';
+function closeAllForms() {
+  const otherForms = document.querySelectorAll('.comments__body');
+  for (const body of otherForms) {
+    body.style.display = 'none';
   }
 }
 
