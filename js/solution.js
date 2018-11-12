@@ -37,3 +37,20 @@ function commentsToogle() {
     });
   }
 }
+
+function markerClick(event) {
+  const bodyForm = event.target.nextElementSibling;
+  if (bodyForm) {
+    if (event.target.className === 'comments__marker-checkbox') {
+      removeEmptyComment();
+
+      if (bodyForm.style.display === 'block') {
+        closeAllForms();
+        bodyForm.style.display = 'none';
+      } else {
+        closeAllForms();
+        bodyForm.style.display = 'block';
+      }
+    }
+  }
+}
