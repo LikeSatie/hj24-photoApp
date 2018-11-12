@@ -6,11 +6,19 @@ document.addEventListener('mousedown', dragStart);
 document.addEventListener('mousemove', moveAt);
 document.addEventListener('mouseup', dragStop);
 
-document.addEventListener('mouseup', () => {
-  if (movedPiece) {
-    movedPiece = null;
+function dragStart(event) {
+  if (event.target.classList.contains('drag')) {
+    movedPiece = event.target.parentNode;
+    bounds = event.target.parentNode.getBoundingClientRect();
+
+    shiftMenu.x = event.pageX - bounds.left - window.pageXOffset;
+    shiftMenu.y = event.pageY - bounds.top - window.pageYOffset;
+
+    maxX = wrap.offsetLeft + wrap.offsetWidth - menu.offsetWidth - 1;
+    maxY = wrap.offsetTop + wrap.offsetHeight - menu.offsetHeight;
+    checkMenuPosition();
   }
-});
+}
 
 function dragStart(event) {
   if (movedPiece) {
