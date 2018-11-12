@@ -8,24 +8,10 @@ function clearForms() {
   }
 }
 
-function getWSConnect() {
-  connection = new WebSocket(
-    `wss://neto-api.herokuapp.com/pic/${sessionStorage.id}`
-  );
-  //    console.log('TCL: getWSConnect -> sessionStorage', sessionStorage);
-  connection.addEventListener('open', () =>
-    console.log('Вебсокет-соединение открыто...')
-  );
-  connection.addEventListener('message', event =>
-    sendMask(JSON.parse(event.data))
-  );
-  connection.addEventListener('close', event =>
-    console.log('Вебсокет-соединение закрыто')
-  );
-  connection.addEventListener('error', error => {
-    errorWrap.classList.remove('hidden');
-    errorMessage.innerText = `WebSocket: произошла ошибка ! Повторите попытку позже... `;
-  });
+function onOpen() {
+  menu.dataset.state = 'initial';
+  image.src = '';
+  clearForms();
 }
 
 if (sessionStorage.id) {
