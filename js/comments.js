@@ -9,39 +9,14 @@ comments.addEventListener('click', () => {
 document.addEventListener('click', closeForm);
 document.addEventListener('click', markerClick);
 
-function toggleComments(event) {
-  const commentsForm = document.querySelectorAll('.comments__form');
-  const commentsOn = document.getElementById('comments-on');
-  const commentsOff = document.getElementById('comments-off');
+function createFormContainer() {
+  formContainer.style.position = 'relative';
+  formContainer.style.top = '50%';
+  formContainer.style.left = '50%';
+  formContainer.style.transform = 'translate(-50%, -50%)';
+  formContainer.style.display = 'block';
 
-  if (commentsOn.checked) {
-    commentsOff.removeAttribute('checked');
-    commentsOn.setAttribute('checked', '');
-    for (const comment of commentsForm) {
-      comment.classList.remove('hidden');
-    }
-    closeAllForms();
-    //    console.log("toggleComments() : Комментарии Включены!");
-  } else {
-    removeEmptyComment();
-    commentsOn.removeAttribute('checked');
-    commentsOff.setAttribute('checked', '');
-
-    for (const comment of commentsForm) {
-      comment.classList.add('hidden');
-    }
-    if (
-      document.querySelector('.comments__marker-checkbox') &&
-      !document
-        .querySelector('.app')
-        .lastChild.querySelector('.comments__marker-checkbox[type]')
-    ) {
-      document
-        .querySelector('.app')
-        .removeChild(document.querySelector('.app').lastChild);
-    }
-    //    console.log("toggleComments() : Комментарии выключены!");
-  }
+  wrap.appendChild(formContainer);
 }
 
 function markerClick(event) {
