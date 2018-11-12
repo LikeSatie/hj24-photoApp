@@ -110,77 +110,33 @@ function createNewComment(event) {
   }
 }
 
-function clearForms() {
-  if (document.querySelector('.comments__form')) {
-    // console.log(`Запущена функция clearForms()`);
-    const forms = document.querySelectorAll('.comments__form');
-    // console.log("TCL: clearForms -> forms", forms);
-    for (const form of forms) {
-      document.querySelector('.app').removeChild(form);
+function sendingComment(event) {
+  if (event.target.className === 'comments__submit') {
+    event.preventDefault();
+    const element = event.target.parentNode.querySelector('textarea');
+    const form = event.target.parentNode.parentNode;
+    if (element.value) {
+      const comment = {
+        message: element.value,
+        left: parseInt(form.style.left),
+        top: parseInt(form.style.top)
+      };
+      needReload = true;
+      sendNewComment(imageId, comment, form);
+      element.value = '';
     }
   }
 }
 
-function createNewComment(event) {
-  const isCommentsOn = document.getElementById('comments-on').checked;
-  if (comments.dataset.state === 'selected' && isCommentsOn) {
-    // console.log(`Запущена функция createNewComment()`);
-    const app = document.querySelector('.app');
-    removeEmptyComment();
-    closeAllForms();
-
-    const form = document.createElement('div');
-    form.className = 'comments__form new';
-
-    const marker = document.createElement('span');
-    marker.className = 'comments__marker';
-
-    const commentsBody = document.createElement('div');
-    commentsBody.className = 'comments__body';
-
-    const createMessaege = document.createElement('div');
-    createMessaege.className = 'comment';
-
-    const loader = document.createElement('div');
-    loader.className = 'loader hidden';
-
-    const span = document.createElement('span');
-
-    const commentsInput = document.createElement('textarea');
-    commentsInput.className = 'comments__input';
-    commentsInput.setAttribute('type', 'text');
-    commentsInput.setAttribute('placeholder', 'Напишите ответ...');
-
-    const commentsClose = document.createElement('input');
-    commentsClose.className = 'comments__close';
-    commentsClose.type = 'button';
-    commentsClose.value = 'Закрыть';
-
-    const commentsSubmit = document.createElement('input');
-    commentsSubmit.className = 'comments__submit';
-    commentsSubmit.type = 'submit';
-    commentsSubmit.value = 'Отправить';
-
-    createMessaege.appendChild(loader);
-    loader.appendChild(span);
-    loader.appendChild(span);
-    loader.appendChild(span);
-    loader.appendChild(span);
-    loader.appendChild(span);
-    commentsBody.appendChild(createMessaege);
-    commentsBody.appendChild(commentsInput);
-    commentsBody.appendChild(commentsClose);
-    commentsBody.appendChild(commentsSubmit);
-
-    form.style.left = event.pageX + 'px';
-    form.style.top = event.pageY + 'px';
-
-    form.appendChild(marker);
-    form.appendChild(commentsBody);
-    app.appendChild(form);
-    commentsClose.addEventListener('click', removeEmptyComment);
-    commentsBody.style.display = 'block';
+function createCommentsArray(comments) {
+  const commentArray = [];
+  console.log('3', comments);
+  for (const comment in comments) {
+    commentArray.push(comments[comment]);
   }
+  clearForms();
+  console.log('4', commentArray);
+  createCommentForm(commentArray);
 }
 
 function messageHandler(event) {
