@@ -1,27 +1,18 @@
-"use strict";
+'use strict';
 
-window.addEventListener("resize", maskSize);
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
-const colorButtons = document.querySelector(".draw-tools");
-let curves = [];
-let color = {
-  red: "#ea5d56",
-  yellow: "#f3d135",
-  green: "#6cbe47",
-  blue: "#53a7f5",
-  purple: "#b36ade"
-};
-let drawing = false;
-let needsRepaint = false;
+image.addEventListener('load', () => {
+  createCanvas();
+  formContainer.style.width = `${image.offsetWidth}px`;
+  formContainer.style.height = `${image.offsetHeight}px`;
+});
+drawer.addEventListener('click', clickModeDraw);
+colorButtons.addEventListener('click', colorSelect);
 
-canvas.addEventListener("dblclick", clearCanvas);
-
-colorButtons.addEventListener("click", event => {
-  if (event.target.name === "color") {
-    const currentColor = document.querySelector(".menu__color[checked]");
-    currentColor.removeAttribute("checked");
-    event.target.setAttribute("checked", "");
+colorButtons.addEventListener('click', event => {
+  if (event.target.name === 'color') {
+    const currentColor = document.querySelector('.menu__color[checked]');
+    currentColor.removeAttribute('checked');
+    event.target.setAttribute('checked', '');
   }
 });
 
@@ -33,7 +24,7 @@ function clearCanvas() {
 }
 
 function getColor() {
-  const currentColor = document.querySelector(".menu__color:checked");
+  const currentColor = document.querySelector('.menu__color:checked');
   return color[currentColor.value];
 }
 
@@ -46,8 +37,8 @@ function smoothCurveBetween(p1, p2) {
 
 function smoothCurve(points) {
   ctx.beginPath();
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
   ctx.moveTo(...points[0]);
   for (let i = 1; i < points.length - 1; i++) {
     smoothCurveBetween(points[i], points[i + 1]);
@@ -55,8 +46,8 @@ function smoothCurve(points) {
   ctx.stroke();
 }
 
-canvas.addEventListener("mousedown", event => {
-  if (draw.dataset.state === "selected") {
+canvas.addEventListener('mousedown', event => {
+  if (draw.dataset.state === 'selected') {
     const curve = [];
     drawing = true;
     curve.push([event.offsetX, event.offsetY]);
@@ -65,17 +56,17 @@ canvas.addEventListener("mousedown", event => {
   }
 });
 
-canvas.addEventListener("mouseup", () => {
+canvas.addEventListener('mouseup', () => {
   curves = [];
   drawing = false;
 });
 
-canvas.addEventListener("mouseleave", () => {
+canvas.addEventListener('mouseleave', () => {
   curves = [];
   drawing = false;
 });
 
-canvas.addEventListener("mousemove", event => {
+canvas.addEventListener('mousemove', event => {
   if (drawing) {
     const point = [event.offsetX, event.offsetY];
     curves[curves.length - 1].push(point);
