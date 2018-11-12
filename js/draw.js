@@ -50,15 +50,11 @@ function createCanvas() {
   needsRepaint = false;
 }
 
-function smoothCurve(points) {
-  ctx.beginPath();
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-  ctx.moveTo(...points[0]);
-  for (let i = 1; i < points.length - 1; i++) {
-    smoothCurveBetween(points[i], points[i + 1]);
-  }
-  ctx.stroke();
+function drawMode() {
+  canvas.classList.remove('hidden');
+  canvas.addEventListener('mousedown', canvasMouseDown);
+  canvas.addEventListener('mouseup', sendMask);
+  resizeCanvas();
 }
 
 canvas.addEventListener('mousedown', event => {
