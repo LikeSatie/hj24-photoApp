@@ -42,3 +42,14 @@ function dragStop() {
     movedPiece = null;
   }
 }
+
+function checkMenuPosition() {
+  if (menu.offsetHeight > 65) {
+    let wid = 2;
+    menuItems.forEach(elem => {
+      wid += elem.offsetWidth;
+    });
+    console.log(wid);
+    menu.style.left = wrap.offsetWidth - wid + 'px';
+  }
+}
