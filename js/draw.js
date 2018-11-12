@@ -16,11 +16,9 @@ function colorSelect(event) {
   }
 }
 
-function clearCanvas() {
-  // console.log(`Запущена функция clearCanvas()`);
-  curves = [];
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  needsRepaint = true;
+function getColor() {
+  const currentColor = document.querySelector('.menu__color[checked]').value;
+  return color[currentColor];
 }
 
 function getColor() {
