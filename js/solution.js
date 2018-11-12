@@ -11,3 +11,14 @@ burger.addEventListener('click', () => {
   checkMenuPosition();
   formContainer.style.zIndex = '';
 });
+
+modes.forEach(elem => {
+  if (!elem.classList.contains('new')) {
+    elem.addEventListener('click', event => {
+      menu.dataset.state = 'selected';
+      event.currentTarget.dataset.state = 'selected';
+      error.classList.add('hidden');
+      checkMenuPosition();
+    });
+  }
+});
