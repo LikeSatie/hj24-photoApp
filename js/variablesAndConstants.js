@@ -36,3 +36,28 @@ const copy = document.querySelector('.menu_copy');
 
 let connection;
 let imageId;
+
+// Commenting and Drawing
+const mask = document.querySelector('.mask');
+const drawer = document.querySelector('.draw');
+const wrapForCanv = document.createElement('div');
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+const colorButtons = document.querySelector('.draw-tools');
+
+let countComments;
+let curves = [];
+let drawing = false;
+let needsRepaint = false;
+let commentsWrap;
+let timer = Date.now();
+let now = null;
+let color = {
+  red: '#ea5d56',
+  yellow: '#f3d135',
+  green: '#6cbe47',
+  blue: '#53a7f5',
+  purple: '#b36ade'
+};
+
+const formContainer = document.createElement('div');
