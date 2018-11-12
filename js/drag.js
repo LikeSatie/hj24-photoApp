@@ -1,11 +1,12 @@
-"use strict";
+'use strict';
 
-document.body.addEventListener("dragover", event => event.preventDefault());
-document.body.addEventListener("drop", onFilesDrop);
-document.addEventListener("mousemove", dragStart, false);
-let movedPiece = null;
+document.body.addEventListener('dragover', event => event.preventDefault());
+document.body.addEventListener('drop', filesDrop);
+document.addEventListener('mousedown', dragStart);
+document.addEventListener('mousemove', moveAt);
+document.addEventListener('mouseup', dragStop);
 
-document.addEventListener("mouseup", () => {
+document.addEventListener('mouseup', () => {
   if (movedPiece) {
     movedPiece = null;
   }
@@ -32,11 +33,11 @@ function dragStart(event) {
 function onFilesDrop(event) {
   // console.log(`Файл выбран. Функция onFilesDrop()`);
   event.preventDefault();
-  if (!img.getAttribute("src")) {
+  if (!img.getAttribute('src')) {
     const files = event.dataTransfer.files;
     sendFile(files[0]);
   } else {
-    errorWrap.classList.remove("hidden");
+    errorWrap.classList.remove('hidden');
     errorMessage.innerText =
       'Чтобы загрузить новое изображение, пожалуйста воспользуйтесь пунктом "Загрузить новое" в меню.';
   }
