@@ -19,9 +19,11 @@ if (href.indexOf('?id=') == -1) {
   onOpen();
 }
 
-if (location.search) {
-  //    console.log(`Перехожу по ссылке ${`\`${location.origin + location.pathname}?${imgID || sessionStorage.id}\``}`);
-  getShareData(location.search.replace(/^\?/, ''));
+function clearCommentForms() {
+  const forms = document.querySelectorAll('.comments__form');
+  for (const form of forms) {
+    formContainer.removeChild(form);
+  }
 }
 
 function getShareData(id) {
