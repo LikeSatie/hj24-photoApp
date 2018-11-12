@@ -71,3 +71,10 @@ document.querySelector('#fileInput').style.height = '100%';
 document.querySelector('#fileInput').style.top = 0;
 document.querySelector('#fileInput').style.left = 0;
 document.querySelector('#fileInput').style.opacity = 0;
+
+copy.addEventListener('click', copyUrl);
+
+function copyUrl() {
+  url.select();
+  document.execCommand('copy');
+}
