@@ -8,13 +8,13 @@ image.addEventListener('load', () => {
 drawer.addEventListener('click', clickModeDraw);
 colorButtons.addEventListener('click', colorSelect);
 
-colorButtons.addEventListener('click', event => {
+function colorSelect(event) {
   if (event.target.name === 'color') {
     const currentColor = document.querySelector('.menu__color[checked]');
     currentColor.removeAttribute('checked');
     event.target.setAttribute('checked', '');
   }
-});
+}
 
 function clearCanvas() {
   // console.log(`Запущена функция clearCanvas()`);
