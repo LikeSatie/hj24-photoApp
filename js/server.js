@@ -105,40 +105,31 @@ function webSocket() {
   });
 }
 
-function sendMask(response) {
-  //    console.log('TCL: sendMask -> response', response);
-  //    console.log(`Запущена функция sendMask()`);
-  if (!response) {
-    if (isDraw) {
-      canvas.toBlob(blob => {
-        currentCanvasSize = blob.size;
-        //                console.log('TCL: sendMask -> emptyCanvasSize', emptyCanvasSize);
-        //                console.log('TCL: sendMask -> currentCanvasSize', currentCanvasSize);
-        if (currentCanvasSize !== emptyCanvasSize) {
-          connection.send(blob);
-        }
-      });
-      isDraw = false;
-    } else {
-      if (img.naturalHeight !== 0) {
-        canvas.toBlob(blob => (emptyCanvasSize = blob.size));
-      }
-    }
+if (location.search) {
+  if (href.indexOf('?') == -1) {
+    mask.classList.add('hidden');
+    onOpen();
   } else {
-    if (response.event === 'mask') {
-      //            console.log('Событие mask...');
-      mask.classList.remove('hidden');
-      clearCanvas();
-      loadMask(response.url)
-        .then(() => maskSize())
-        .then(() => console.log('Mask loaded and resized!'));
-    } else if (response.event === 'comment') {
-      //            console.log('Событие comment...');
-      pullComments(response);
+    let indexOfId = href.indexOf('?') + 1;
+    let indexOfShare = href.indexOf('&share');
+    if (indexOfShare == -1) {
+      imageId = href.substring(indexOfId);
+      console.log(imageId);
+      webSocket();
     } else {
-      loadImg(response.pic.url).then(() => canvasSize());
+      imageId = href.substring(indexOfId, indexOfShare);
+      webSocket();
+      menu.dataset.state = 'selected';
+      comments.dataset.state = 'selected';
     }
+    url.value = window.location.href;
   }
+  console.log(
+    `Перехожу по ссылке ${`\`${location.origin + location.pathname}${
+      location.search
+    }\``}`
+  );
+  getShareData(imageId);
 }
 
 function pullComments(result) {
