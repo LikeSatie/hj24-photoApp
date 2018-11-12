@@ -27,12 +27,9 @@ function removeEmptyComment() {
   }
 }
 
-function removeEmptyComment() {
-  //   console.log(`Запущена функция removeEmptyComment()`);
-  const isNewComment = document.getElementsByClassName('comments__form new')[0];
-  //   console.log(isNewComment);
-  if (isNewComment) {
-    document.querySelector('.app').removeChild(isNewComment);
+function closeForm(event) {
+  if (event.target.className === 'comments__close') {
+    event.target.parentNode.style.display = 'none';
   }
 }
 
