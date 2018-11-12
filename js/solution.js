@@ -22,3 +22,18 @@ modes.forEach(elem => {
     });
   }
 });
+
+commentsOn.addEventListener('change', commentsToogle);
+commentsOff.addEventListener('change', commentsToogle);
+
+function commentsToogle() {
+  if (commentsOn.checked) {
+    document.querySelectorAll('.comments__form').forEach(form => {
+      form.style.display = '';
+    });
+  } else {
+    document.querySelectorAll('.comments__form').forEach(form => {
+      form.style.display = 'none';
+    });
+  }
+}
