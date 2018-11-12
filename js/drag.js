@@ -49,7 +49,19 @@ function checkMenuPosition() {
     menuItems.forEach(elem => {
       wid += elem.offsetWidth;
     });
-    console.log(wid);
+    // console.log(wid);
     menu.style.left = wrap.offsetWidth - wid + 'px';
+  }
+}
+
+function filesDrop(event) {
+  event.preventDefault();
+  if (!image.getAttribute('src')) {
+    const files = event.dataTransfer.files;
+    sendFile(files[0]);
+  } else {
+    error.classList.remove('hidden');
+    errorMessage.innerText =
+      'Чтобы загрузить новое изображение, воспользуйтесь пунктом "Загрузить новое" в меню.';
   }
 }
