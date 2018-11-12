@@ -62,15 +62,27 @@ function resizeCanvas() {
   canvas.height = mask.height = document.querySelector('.current-image').height;
 }
 
-canvas.addEventListener('mouseup', () => {
-  curves = [];
-  drawing = false;
-});
+function canvasMouseDown(event) {
+  x = event.offsetX;
+  y = event.offsetY;
+  draw(event);
+  canvas.addEventListener('mousemove', draw);
+}
 
-canvas.addEventListener('mouseleave', () => {
-  curves = [];
-  drawing = false;
-});
+function draw(event) {
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = 4;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = getColor();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(event.offsetX, event.offsetY);
+  ctx.closePath();
+  ctx.stroke();
+  x = event.offsetX;
+  y = event.offsetY;
+}
 
 canvas.addEventListener('mousemove', event => {
   if (drawing) {
