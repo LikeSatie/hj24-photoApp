@@ -216,3 +216,24 @@ function sendNewComment(id, comment, target) {
   });
   xhr.send(body);
 }
+
+function sendMask(event) {
+  canvas.removeEventListener('mousemove', draw);
+  if (event.target !== canvas) {
+    return;
+  }
+  now = Date.now();
+  if (now - timer > 1000) {
+    canvas.toBlob(blob => connection.send(blob));
+    timer = now;
+  }
+  if (event === 'mask') {
+    console.log('Событие mask...');
+    mask.classList.remove('hidden');
+    mask.src = response.url;
+    clearCanvas();
+  } else if (event === 'comment') {
+    console.log('Событие comment...');
+    pullComments(response);
+  }
+}
