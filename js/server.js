@@ -148,3 +148,37 @@ function getShareData(id) {
   });
   xhr.send();
 }
+
+function loadShareData(result) {
+  image.src = result.url;
+  imageId = result.id;
+  if (href.indexOf('&share') == -1) {
+    url.value = `${location.href}` + '&share';
+    menu.dataset.state = 'selected';
+    share.dataset.state = 'selected';
+  } else {
+    menu.dataset.state = 'selected';
+    comments.dataset.state = 'selected';
+    formContainer.style.zIndex = '2';
+  }
+
+  if (result.comments) {
+    createCommentsArray(result.comments);
+  }
+
+  if (result.mask) {
+    mask.src = result.mask;
+    mask.classList.remove('hidden');
+    mask.style.display = 'none';
+  }
+
+  if (document.getElementById('comments-off').checked) {
+    console.log('Комментарии выключены!');
+    commentsForm = document.querySelectorAll('.comments__form');
+    for (const comment of commentsForm) {
+      comment.classList.add('hidden');
+    }
+  }
+  webSocket();
+  closeAllForms();
+}
