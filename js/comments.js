@@ -22,7 +22,6 @@ function createFormContainer() {
 function removeEmptyComment() {
   const isNewComment = document.getElementsByClassName('comments__form new')[0];
   if (isNewComment) {
-    // document.querySelector('.app').removeChild(isNewComment);
     formContainer.removeChild(isNewComment);
   }
 }
@@ -139,60 +138,11 @@ function createCommentsArray(comments) {
   createCommentForm(commentArray);
 }
 
-function messageHandler(event) {
-  if (event.target.className === 'comments__submit') {
-    // console.log(`Запущена функция messageHandler()`);
-    event.preventDefault();
-    const element = event.target.parentNode.querySelector('textarea');
-    const form = event.target.parentNode.parentNode;
-    const pic = document.querySelector('img');
-    const imageHeight = pic.getBoundingClientRect().height;
-    const imageWidth = pic.getBoundingClientRect().width;
-    const imageLeft = pic.getBoundingClientRect().x;
-    const imageTop = pic.getBoundingClientRect().y;
-
-    if (element.value) {
-      const comment = {
-        message: element.value,
-        left: ((parseFloat(form.style.left) - imageLeft) / imageWidth).toFixed(
-          3
-        ),
-        top: ((parseFloat(form.style.top) - imageTop) / imageHeight).toFixed(3)
-      };
-      needReload = true;
-      sendNewComment(sessionStorage.id, comment, form);
-      element.value = '';
-    }
-  }
-}
-
-function createCommentsArray(comments) {
-  //   console.log(`Запущена функция createCommentsArray()`);
-  const commentArray = [];
-
-  //   console.log("TCL: createCommentsArray -> commentArray", commentArray);
-
-  for (const comment in comments) {
-    commentArray.push(comments[comment]);
-  }
-  clearForms();
-  createCommentForm(commentArray);
-}
-
 function createCommentForm(comments) {
-  //   console.log("TCL: createCommentForm -> comments", comments);
-  //   console.log(`Запущена функция createCommentForm()`);
+  console.log(comments);
   const app = document.querySelector('.app');
 
-  const imageHeight = document.querySelector('img').getBoundingClientRect()
-    .height;
-  const imageWidth = document.querySelector('img').getBoundingClientRect()
-    .width;
-  const imageLeft = document.querySelector('img').getBoundingClientRect().x;
-  const imageTop = document.querySelector('img').getBoundingClientRect().y;
-
   for (let comment of comments) {
-    // console.log("TCL: createCommentForm -> comment", comment);
     closeAllForms();
 
     const form = document.createElement('div');
@@ -224,21 +174,19 @@ function createCommentForm(comments) {
     commit.appendChild(message);
 
     const current = document.querySelector(
-      `.comments__form[data-aspect-left='${comment.left}'], [data-aspect-top='${
+      `.comments__form[style="left: ${comment.left}px; top: ${
         comment.top
-      }']`
+      }px; z-index: 2;"]`
     );
 
     if (!current) {
       commentsBody.appendChild(commit);
-      form.style.left = `${imageWidth * comment.left + imageLeft}px`;
-      form.style.top = `${comment.top * imageHeight + imageTop}px`;
-      form.dataset.aspectLeft = comment.left;
-      form.dataset.aspectTop = comment.top;
-      app.appendChild(form);
+      form.style.left = comment.left + 'px';
+      form.style.top = comment.top + 'px';
+      form.style.zIndex = '2';
+      markerCheckbox.style.zIndex = '2';
+      formContainer.appendChild(form);
     } else {
-      form.dataset.aspectLeft = comment.left;
-      form.dataset.aspectTop = comment.top;
       appendComment(commit, current);
     }
 
@@ -281,8 +229,6 @@ function createCommentForm(comments) {
 }
 
 function appendComment(element, target) {
-  //   console.log(target);
-  //   console.log(`Запущена функция appendComment()`);
   const comments = target
     .querySelector('.comments__body')
     .querySelectorAll('.comment');
@@ -296,129 +242,15 @@ function appendComment(element, target) {
   needReload = false;
 }
 
-function createComments(event) {
-  const isCommentsOn = document.getElementById('comments-on').checked;
-  if (comments.dataset.state === 'selected' && isCommentsOn) {
-    removeEmptyComment();
-    closeAllForms();
-    const app = document.querySelector('.app');
-    const emptyFragment = document.createDocumentFragment();
-    emptyFragment.appendChild(commentTemplateEngine(commentTemplate(event)));
-    app.appendChild(emptyFragment);
-    const newComment = document.querySelector('.comments__form new');
-    // console.log(newComment);
-    newComment
-      .querySelector('.comments__close')
-      .addEventListener('click', removeEmptyComment);
-    newComment.style.left = event.pageX + 'px';
-    newComment.style.top = event.pageY + 'px';
-  }
-}
-
-function commentTemplateEngine(comment) {
-  if (comment === undefined || comment === null || comment === false) {
-    return document.createTextNode('');
-  }
-
-  if (typeof comment === 'string' || typeof comment === 'number') {
-    return document.createTextNode(comment);
-  }
-
-  if (Array.isArray(comment)) {
-    return comment.reduce((emptyElement, el) => {
-      emptyElement.appendChild(commentTemplateEngine(el));
-      return emptyElement;
-    }, document.createDocumentFragment());
-  }
-
-  const element = document.createElement(comment.tag || 'div');
-
-  [].concat(comment.className || []).forEach(cls => element.classList.add(cls));
-
-  if (comment.attr) {
-    Object.keys(comment.attr).forEach(key =>
-      element.setAttribute(key, comment.attr[key])
-    );
-  }
-
-  element.appendChild(commentTemplateEngine(comment.content));
-
-  return element;
-}
-
-function commentTemplate(event) {
-  return {
-    tag: 'div',
-    className: ['comments__form', 'new'],
-    attr: {
-      style: `left: ${event.pageX}px; top: ${event.pageY}px`
-    },
-    content: [
-      {
-        tag: 'span',
-        className: 'comments__marker'
-      },
-
-      {
-        tag: 'div',
-        className: 'comments__body',
-        attr: {
-          style: 'display: block'
-        },
-        content: [
-          {
-            tag: 'div',
-            className: 'comment',
-            content: [
-              {
-                tag: 'div',
-                className: ['loader', 'hidden'],
-                content: [
-                  {
-                    tag: 'span'
-                  },
-                  {
-                    tag: 'span'
-                  },
-                  {
-                    tag: 'span'
-                  },
-                  {
-                    tag: 'span'
-                  },
-                  {
-                    tag: 'span'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            tag: 'textarea',
-            className: 'comments__input',
-            attr: {
-              type: 'text',
-              placeholder: 'Напишите ответ...'
-            }
-          },
-          {
-            tag: 'input',
-            className: 'comments__close',
-            attr: {
-              type: 'button',
-              value: 'Закрыть'
-            }
-          },
-          {
-            tag: 'input',
-            className: 'comments__submit',
-            attr: {
-              type: 'submit',
-              value: 'Отправить'
-            }
-          }
-        ]
-      }
-    ]
+function timeParser(miliseconds) {
+  const date = new Date(miliseconds);
+  const options = {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   };
+  const formatDate = new Intl.DateTimeFormat('ru-RU', options).format;
+  return formatDate(date);
 }
