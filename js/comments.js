@@ -1,41 +1,44 @@
-"use strict";
+'use strict';
 
-canvas.addEventListener("click", createNewComment);
-document.querySelector(".app").addEventListener("click", messageHandler);
-document.addEventListener("click", markerClick);
-document.addEventListener("click", closeForm);
-menuToggle.addEventListener("click", toggleComments);
+createFormContainer();
+formContainer.addEventListener('click', createNewComment);
+document.querySelector('.app').addEventListener('click', sendingComment);
+comments.addEventListener('click', () => {
+  formContainer.style.zIndex = '2';
+});
+document.addEventListener('click', closeForm);
+document.addEventListener('click', markerClick);
 
 function toggleComments(event) {
-  const commentsForm = document.querySelectorAll(".comments__form");
-  const commentsOn = document.getElementById("comments-on");
-  const commentsOff = document.getElementById("comments-off");
+  const commentsForm = document.querySelectorAll('.comments__form');
+  const commentsOn = document.getElementById('comments-on');
+  const commentsOff = document.getElementById('comments-off');
 
   if (commentsOn.checked) {
-    commentsOff.removeAttribute("checked");
-    commentsOn.setAttribute("checked", "");
+    commentsOff.removeAttribute('checked');
+    commentsOn.setAttribute('checked', '');
     for (const comment of commentsForm) {
-      comment.classList.remove("hidden");
+      comment.classList.remove('hidden');
     }
     closeAllForms();
     //    console.log("toggleComments() : Комментарии Включены!");
   } else {
     removeEmptyComment();
-    commentsOn.removeAttribute("checked");
-    commentsOff.setAttribute("checked", "");
+    commentsOn.removeAttribute('checked');
+    commentsOff.setAttribute('checked', '');
 
     for (const comment of commentsForm) {
-      comment.classList.add("hidden");
+      comment.classList.add('hidden');
     }
     if (
-      document.querySelector(".comments__marker-checkbox") &&
+      document.querySelector('.comments__marker-checkbox') &&
       !document
-        .querySelector(".app")
-        .lastChild.querySelector(".comments__marker-checkbox[type]")
+        .querySelector('.app')
+        .lastChild.querySelector('.comments__marker-checkbox[type]')
     ) {
       document
-        .querySelector(".app")
-        .removeChild(document.querySelector(".app").lastChild);
+        .querySelector('.app')
+        .removeChild(document.querySelector('.app').lastChild);
     }
     //    console.log("toggleComments() : Комментарии выключены!");
   }
@@ -44,15 +47,15 @@ function toggleComments(event) {
 function markerClick(event) {
   const bodyForm = event.target.nextElementSibling;
   if (bodyForm) {
-    if (event.target.className === "comments__marker-checkbox") {
+    if (event.target.className === 'comments__marker-checkbox') {
       removeEmptyComment();
 
-      if (bodyForm.style.display === "block") {
+      if (bodyForm.style.display === 'block') {
         closeAllForms();
-        bodyForm.style.display = "none";
+        bodyForm.style.display = 'none';
       } else {
         closeAllForms();
-        bodyForm.style.display = "block";
+        bodyForm.style.display = 'block';
       }
     }
   }
@@ -60,78 +63,78 @@ function markerClick(event) {
 
 function removeEmptyComment() {
   //   console.log(`Запущена функция removeEmptyComment()`);
-  const isNewComment = document.getElementsByClassName("comments__form new")[0];
+  const isNewComment = document.getElementsByClassName('comments__form new')[0];
   //   console.log(isNewComment);
   if (isNewComment) {
-    document.querySelector(".app").removeChild(isNewComment);
+    document.querySelector('.app').removeChild(isNewComment);
   }
 }
 
 function closeForm(event) {
-  if (event.target.className === "comments__close") {
+  if (event.target.className === 'comments__close') {
     // console.log(`Запущена функция closeForm()`);
-    event.target.parentNode.style.display = "none";
+    event.target.parentNode.style.display = 'none';
   }
 }
 
 function closeAllForms() {
   //   console.log(`Запущена функция closeAllForms()`);
-  const otherForms = document.querySelectorAll(".comments__body");
+  const otherForms = document.querySelectorAll('.comments__body');
   for (const body of otherForms) {
-    body.style.display = "none";
+    body.style.display = 'none';
   }
 }
 
 function clearForms() {
-  if (document.querySelector(".comments__form")) {
+  if (document.querySelector('.comments__form')) {
     // console.log(`Запущена функция clearForms()`);
-    const forms = document.querySelectorAll(".comments__form");
+    const forms = document.querySelectorAll('.comments__form');
     // console.log("TCL: clearForms -> forms", forms);
     for (const form of forms) {
-      document.querySelector(".app").removeChild(form);
+      document.querySelector('.app').removeChild(form);
     }
   }
 }
 
 function createNewComment(event) {
-  const isCommentsOn = document.getElementById("comments-on").checked;
-  if (comments.dataset.state === "selected" && isCommentsOn) {
+  const isCommentsOn = document.getElementById('comments-on').checked;
+  if (comments.dataset.state === 'selected' && isCommentsOn) {
     // console.log(`Запущена функция createNewComment()`);
-    const app = document.querySelector(".app");
+    const app = document.querySelector('.app');
     removeEmptyComment();
     closeAllForms();
 
-    const form = document.createElement("div");
-    form.className = "comments__form new";
+    const form = document.createElement('div');
+    form.className = 'comments__form new';
 
-    const marker = document.createElement("span");
-    marker.className = "comments__marker";
+    const marker = document.createElement('span');
+    marker.className = 'comments__marker';
 
-    const commentsBody = document.createElement("div");
-    commentsBody.className = "comments__body";
+    const commentsBody = document.createElement('div');
+    commentsBody.className = 'comments__body';
 
-    const createMessaege = document.createElement("div");
-    createMessaege.className = "comment";
+    const createMessaege = document.createElement('div');
+    createMessaege.className = 'comment';
 
-    const loader = document.createElement("div");
-    loader.className = "loader hidden";
+    const loader = document.createElement('div');
+    loader.className = 'loader hidden';
 
-    const span = document.createElement("span");
+    const span = document.createElement('span');
 
-    const commentsInput = document.createElement("textarea");
-    commentsInput.className = "comments__input";
-    commentsInput.setAttribute("type", "text");
-    commentsInput.setAttribute("placeholder", "Напишите ответ...");
+    const commentsInput = document.createElement('textarea');
+    commentsInput.className = 'comments__input';
+    commentsInput.setAttribute('type', 'text');
+    commentsInput.setAttribute('placeholder', 'Напишите ответ...');
 
-    const commentsClose = document.createElement("input");
-    commentsClose.className = "comments__close";
-    commentsClose.type = "button";
-    commentsClose.value = "Закрыть";
+    const commentsClose = document.createElement('input');
+    commentsClose.className = 'comments__close';
+    commentsClose.type = 'button';
+    commentsClose.value = 'Закрыть';
 
-    const commentsSubmit = document.createElement("input");
-    commentsSubmit.className = "comments__submit";
-    commentsSubmit.type = "submit";
-    commentsSubmit.value = "Отправить";
+    const commentsSubmit = document.createElement('input');
+    commentsSubmit.className = 'comments__submit';
+    commentsSubmit.type = 'submit';
+    commentsSubmit.value = 'Отправить';
 
     createMessaege.appendChild(loader);
     loader.appendChild(span);
@@ -144,24 +147,24 @@ function createNewComment(event) {
     commentsBody.appendChild(commentsClose);
     commentsBody.appendChild(commentsSubmit);
 
-    form.style.left = event.pageX + "px";
-    form.style.top = event.pageY + "px";
+    form.style.left = event.pageX + 'px';
+    form.style.top = event.pageY + 'px';
 
     form.appendChild(marker);
     form.appendChild(commentsBody);
     app.appendChild(form);
-    commentsClose.addEventListener("click", removeEmptyComment);
-    commentsBody.style.display = "block";
+    commentsClose.addEventListener('click', removeEmptyComment);
+    commentsBody.style.display = 'block';
   }
 }
 
 function messageHandler(event) {
-  if (event.target.className === "comments__submit") {
+  if (event.target.className === 'comments__submit') {
     // console.log(`Запущена функция messageHandler()`);
     event.preventDefault();
-    const element = event.target.parentNode.querySelector("textarea");
+    const element = event.target.parentNode.querySelector('textarea');
     const form = event.target.parentNode.parentNode;
-    const pic = document.querySelector("img");
+    const pic = document.querySelector('img');
     const imageHeight = pic.getBoundingClientRect().height;
     const imageWidth = pic.getBoundingClientRect().width;
     const imageLeft = pic.getBoundingClientRect().x;
@@ -177,7 +180,7 @@ function messageHandler(event) {
       };
       needReload = true;
       sendNewComment(sessionStorage.id, comment, form);
-      element.value = "";
+      element.value = '';
     }
   }
 }
@@ -198,42 +201,42 @@ function createCommentsArray(comments) {
 function createCommentForm(comments) {
   //   console.log("TCL: createCommentForm -> comments", comments);
   //   console.log(`Запущена функция createCommentForm()`);
-  const app = document.querySelector(".app");
+  const app = document.querySelector('.app');
 
-  const imageHeight = document.querySelector("img").getBoundingClientRect()
+  const imageHeight = document.querySelector('img').getBoundingClientRect()
     .height;
-  const imageWidth = document.querySelector("img").getBoundingClientRect()
+  const imageWidth = document.querySelector('img').getBoundingClientRect()
     .width;
-  const imageLeft = document.querySelector("img").getBoundingClientRect().x;
-  const imageTop = document.querySelector("img").getBoundingClientRect().y;
+  const imageLeft = document.querySelector('img').getBoundingClientRect().x;
+  const imageTop = document.querySelector('img').getBoundingClientRect().y;
 
   for (let comment of comments) {
     // console.log("TCL: createCommentForm -> comment", comment);
     closeAllForms();
 
-    const form = document.createElement("div");
-    form.className = "comments__form";
+    const form = document.createElement('div');
+    form.className = 'comments__form';
 
-    const marker = document.createElement("span");
-    marker.className = "comments__marker";
+    const marker = document.createElement('span');
+    marker.className = 'comments__marker';
 
-    const markerCheckbox = document.createElement("input");
-    markerCheckbox.className = "comments__marker-checkbox";
-    markerCheckbox.type = "checkbox";
+    const markerCheckbox = document.createElement('input');
+    markerCheckbox.className = 'comments__marker-checkbox';
+    markerCheckbox.type = 'checkbox';
 
-    const commentsBody = document.createElement("div");
-    commentsBody.className = "comments__body";
-    commentsBody.style.display = "block";
+    const commentsBody = document.createElement('div');
+    commentsBody.className = 'comments__body';
+    commentsBody.style.display = 'block';
 
-    const commit = document.createElement("div");
-    commit.className = "comment";
+    const commit = document.createElement('div');
+    commit.className = 'comment';
 
-    const time = document.createElement("p");
-    time.className = "comment__time";
+    const time = document.createElement('p');
+    time.className = 'comment__time';
     time.innerText = timeParser(comment.timestamp);
 
-    const message = document.createElement("p");
-    message.className = "comment__message";
+    const message = document.createElement('p');
+    message.className = 'comment__message';
     message.innerText = comment.message;
 
     commit.appendChild(time);
@@ -258,32 +261,32 @@ function createCommentForm(comments) {
       appendComment(commit, current);
     }
 
-    const createMessage = document.createElement("div");
-    createMessage.className = "comment load";
+    const createMessage = document.createElement('div');
+    createMessage.className = 'comment load';
 
-    const loader = document.createElement("div");
-    loader.className = "loader hidden";
+    const loader = document.createElement('div');
+    loader.className = 'loader hidden';
 
-    const commentsInput = document.createElement("textarea");
-    commentsInput.className = "comments__input";
-    commentsInput.setAttribute("type", "text");
-    commentsInput.setAttribute("placeholder", "Напишите ответ...");
+    const commentsInput = document.createElement('textarea');
+    commentsInput.className = 'comments__input';
+    commentsInput.setAttribute('type', 'text');
+    commentsInput.setAttribute('placeholder', 'Напишите ответ...');
 
-    const commentsClose = document.createElement("input");
-    commentsClose.className = "comments__close";
-    commentsClose.type = "button";
-    commentsClose.value = "Закрыть";
+    const commentsClose = document.createElement('input');
+    commentsClose.className = 'comments__close';
+    commentsClose.type = 'button';
+    commentsClose.value = 'Закрыть';
 
-    const commentsSubmit = document.createElement("input");
-    commentsSubmit.className = "comments__submit";
-    commentsSubmit.type = "submit";
-    commentsSubmit.value = "Отправить";
+    const commentsSubmit = document.createElement('input');
+    commentsSubmit.className = 'comments__submit';
+    commentsSubmit.type = 'submit';
+    commentsSubmit.value = 'Отправить';
 
-    loader.appendChild(document.createElement("span"));
-    loader.appendChild(document.createElement("span"));
-    loader.appendChild(document.createElement("span"));
-    loader.appendChild(document.createElement("span"));
-    loader.appendChild(document.createElement("span"));
+    loader.appendChild(document.createElement('span'));
+    loader.appendChild(document.createElement('span'));
+    loader.appendChild(document.createElement('span'));
+    loader.appendChild(document.createElement('span'));
+    loader.appendChild(document.createElement('span'));
     createMessage.appendChild(loader);
     commentsBody.appendChild(createMessage);
     commentsBody.appendChild(commentsInput);
@@ -300,43 +303,43 @@ function appendComment(element, target) {
   //   console.log(target);
   //   console.log(`Запущена функция appendComment()`);
   const comments = target
-    .querySelector(".comments__body")
-    .querySelectorAll(".comment");
+    .querySelector('.comments__body')
+    .querySelectorAll('.comment');
   closeAllForms();
   if (target) {
     target
-      .querySelector(".comments__body")
-      .insertBefore(element, target.querySelector(".load"));
-    target.querySelector(".comments__body").style.display = "block";
+      .querySelector('.comments__body')
+      .insertBefore(element, target.querySelector('.load'));
+    target.querySelector('.comments__body').style.display = 'block';
   }
   needReload = false;
 }
 
 function createComments(event) {
-  const isCommentsOn = document.getElementById("comments-on").checked;
-  if (comments.dataset.state === "selected" && isCommentsOn) {
+  const isCommentsOn = document.getElementById('comments-on').checked;
+  if (comments.dataset.state === 'selected' && isCommentsOn) {
     removeEmptyComment();
     closeAllForms();
-    const app = document.querySelector(".app");
+    const app = document.querySelector('.app');
     const emptyFragment = document.createDocumentFragment();
     emptyFragment.appendChild(commentTemplateEngine(commentTemplate(event)));
     app.appendChild(emptyFragment);
-    const newComment = document.querySelector(".comments__form new");
+    const newComment = document.querySelector('.comments__form new');
     // console.log(newComment);
     newComment
-      .querySelector(".comments__close")
-      .addEventListener("click", removeEmptyComment);
-    newComment.style.left = event.pageX + "px";
-    newComment.style.top = event.pageY + "px";
+      .querySelector('.comments__close')
+      .addEventListener('click', removeEmptyComment);
+    newComment.style.left = event.pageX + 'px';
+    newComment.style.top = event.pageY + 'px';
   }
 }
 
 function commentTemplateEngine(comment) {
   if (comment === undefined || comment === null || comment === false) {
-    return document.createTextNode("");
+    return document.createTextNode('');
   }
 
-  if (typeof comment === "string" || typeof comment === "number") {
+  if (typeof comment === 'string' || typeof comment === 'number') {
     return document.createTextNode(comment);
   }
 
@@ -347,7 +350,7 @@ function commentTemplateEngine(comment) {
     }, document.createDocumentFragment());
   }
 
-  const element = document.createElement(comment.tag || "div");
+  const element = document.createElement(comment.tag || 'div');
 
   [].concat(comment.className || []).forEach(cls => element.classList.add(cls));
 
@@ -364,73 +367,73 @@ function commentTemplateEngine(comment) {
 
 function commentTemplate(event) {
   return {
-    tag: "div",
-    className: ["comments__form", "new"],
+    tag: 'div',
+    className: ['comments__form', 'new'],
     attr: {
       style: `left: ${event.pageX}px; top: ${event.pageY}px`
     },
     content: [
       {
-        tag: "span",
-        className: "comments__marker"
+        tag: 'span',
+        className: 'comments__marker'
       },
 
       {
-        tag: "div",
-        className: "comments__body",
+        tag: 'div',
+        className: 'comments__body',
         attr: {
-          style: "display: block"
+          style: 'display: block'
         },
         content: [
           {
-            tag: "div",
-            className: "comment",
+            tag: 'div',
+            className: 'comment',
             content: [
               {
-                tag: "div",
-                className: ["loader", "hidden"],
+                tag: 'div',
+                className: ['loader', 'hidden'],
                 content: [
                   {
-                    tag: "span"
+                    tag: 'span'
                   },
                   {
-                    tag: "span"
+                    tag: 'span'
                   },
                   {
-                    tag: "span"
+                    tag: 'span'
                   },
                   {
-                    tag: "span"
+                    tag: 'span'
                   },
                   {
-                    tag: "span"
+                    tag: 'span'
                   }
                 ]
               }
             ]
           },
           {
-            tag: "textarea",
-            className: "comments__input",
+            tag: 'textarea',
+            className: 'comments__input',
             attr: {
-              type: "text",
-              placeholder: "Напишите ответ..."
+              type: 'text',
+              placeholder: 'Напишите ответ...'
             }
           },
           {
-            tag: "input",
-            className: "comments__close",
+            tag: 'input',
+            className: 'comments__close',
             attr: {
-              type: "button",
-              value: "Закрыть"
+              type: 'button',
+              value: 'Закрыть'
             }
           },
           {
-            tag: "input",
-            className: "comments__submit",
+            tag: 'input',
+            className: 'comments__submit',
             attr: {
-              type: "submit",
-              value: "Отправить"
+              type: 'submit',
+              value: 'Отправить'
             }
           }
         ]
