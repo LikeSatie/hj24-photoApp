@@ -182,3 +182,37 @@ function loadShareData(result) {
   webSocket();
   closeAllForms();
 }
+
+function sendNewComment(id, comment, target) {
+  const xhr = new XMLHttpRequest();
+  const body =
+    'message=' +
+    encodeURIComponent(comment.message) +
+    '&left=' +
+    comment.left +
+    '&top=' +
+    comment.top;
+  xhr.open('POST', `https://neto-api.herokuapp.com/pic/${id}/comments`, true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.addEventListener('loadstart', () =>
+    target.querySelector('.loader').classList.remove('hidden')
+  );
+  xhr.addEventListener('loadend', () =>
+    target.querySelector('.loader').classList.add('hidden')
+  );
+  xhr.addEventListener('load', () => {
+    console.log(xhr.status);
+    if (xhr.status === 200) {
+      console.log('Комментарий был отправвлен!');
+      const result = JSON.parse(xhr.responseText);
+      createCommentsArray(result.comments);
+      needReload = false;
+    } else {
+      error.classList.remove('hidden');
+      errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+        xhr.statusText
+      }... Повторите попытку позже... `;
+    }
+  });
+  xhr.send(body);
+}
