@@ -21,9 +21,10 @@ function getColor() {
   return color[currentColor];
 }
 
-function getColor() {
-  const currentColor = document.querySelector('.menu__color:checked');
-  return color[currentColor.value];
+function clickModeDraw() {
+  menu.dataset.state = 'selected';
+  drawer.dataset.state = 'selected';
+  drawMode();
 }
 
 function smoothCurveBetween(p1, p2) {
