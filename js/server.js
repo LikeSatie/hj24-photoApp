@@ -132,20 +132,19 @@ if (location.search) {
   getShareData(imageId);
 }
 
-function pullComments(result) {
-  //    console.log(`Запущена функция pullComments()`);
-  countComments = 0;
-  const countCurrentComments =
-    document.getElementsByClassName('comment').length -
-    document.getElementsByClassName('comment load').length;
-  needReload = countComments === countCurrentComments ? false : true;
-  if (result) {
-    createCommentForm([result.comment]);
-  }
-  if (document.getElementById('comments-off').checked) {
-    const commentsForm = document.querySelectorAll('.comments__form');
-    for (const comment of commentsForm) {
-      comment.classList.add('hidden');
+function getShareData(id) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `https://neto-api.herokuapp.com/pic/${id}`);
+  xhr.addEventListener('load', () => {
+    console.log(xhr.status);
+    if (xhr.status === 200) {
+      loadShareData(JSON.parse(xhr.responseText));
+    } else {
+      error.classList.remove('hidden');
+      errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+        xhr.statusText
+      }... Повторите попытку позже... `;
     }
-  }
+  });
+  xhr.send();
 }
