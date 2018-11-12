@@ -1,5 +1,3 @@
-'use strict';
-
 burger.addEventListener('click', () => {
   menu.dataset.state = 'default';
   modes.forEach(elem => (elem.dataset.state = ''));
