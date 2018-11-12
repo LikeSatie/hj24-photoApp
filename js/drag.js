@@ -1,5 +1,4 @@
 'use strict';
-
 document.body.addEventListener('dragover', event => event.preventDefault());
 document.body.addEventListener('drop', filesDrop);
 document.addEventListener('mousedown', dragStart);
