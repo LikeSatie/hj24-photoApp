@@ -1,5 +1,3 @@
-'use strict';
-
 image.addEventListener('load', () => {
   createCanvas();
   formContainer.style.width = `${image.offsetWidth}px`;

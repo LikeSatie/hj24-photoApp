@@ -1,5 +1,3 @@
-'use strict';
-
 createFormContainer();
 formContainer.addEventListener('click', createNewComment);
 document.querySelector('.app').addEventListener('click', sendingComment);
