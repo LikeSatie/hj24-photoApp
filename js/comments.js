@@ -19,20 +19,11 @@ function createFormContainer() {
   wrap.appendChild(formContainer);
 }
 
-function markerClick(event) {
-  const bodyForm = event.target.nextElementSibling;
-  if (bodyForm) {
-    if (event.target.className === 'comments__marker-checkbox') {
-      removeEmptyComment();
-
-      if (bodyForm.style.display === 'block') {
-        closeAllForms();
-        bodyForm.style.display = 'none';
-      } else {
-        closeAllForms();
-        bodyForm.style.display = 'block';
-      }
-    }
+function removeEmptyComment() {
+  const isNewComment = document.getElementsByClassName('comments__form new')[0];
+  if (isNewComment) {
+    // document.querySelector('.app').removeChild(isNewComment);
+    formContainer.removeChild(isNewComment);
   }
 }
 
