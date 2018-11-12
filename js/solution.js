@@ -54,3 +54,20 @@ function markerClick(event) {
     }
   }
 }
+
+const fileInput = document.createElement('input');
+fileInput.setAttribute('id', 'fileInput');
+fileInput.setAttribute('type', 'file');
+fileInput.setAttribute('accept', 'image/jpeg, image/png');
+
+fileInput.addEventListener('change', event => {
+  const file = event.currentTarget.files[0];
+  sendFile(file);
+});
+document.querySelector('.new').appendChild(fileInput);
+document.querySelector('#fileInput').style.position = 'absolute';
+document.querySelector('#fileInput').style.width = '100%';
+document.querySelector('#fileInput').style.height = '100%';
+document.querySelector('#fileInput').style.top = 0;
+document.querySelector('#fileInput').style.left = 0;
+document.querySelector('#fileInput').style.opacity = 0;
