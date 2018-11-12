@@ -57,15 +57,10 @@ function drawMode() {
   resizeCanvas();
 }
 
-canvas.addEventListener('mousedown', event => {
-  if (draw.dataset.state === 'selected') {
-    const curve = [];
-    drawing = true;
-    curve.push([event.offsetX, event.offsetY]);
-    curves.push(curve);
-    needsRepaint = true;
-  }
-});
+function resizeCanvas() {
+  canvas.width = mask.width = document.querySelector('.current-image').width;
+  canvas.height = mask.height = document.querySelector('.current-image').height;
+}
 
 canvas.addEventListener('mouseup', () => {
   curves = [];
