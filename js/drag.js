@@ -37,15 +37,8 @@ function moveAt(event) {
   checkMenuPosition();
 }
 
-function onFilesDrop(event) {
-  // console.log(`Файл выбран. Функция onFilesDrop()`);
-  event.preventDefault();
-  if (!img.getAttribute('src')) {
-    const files = event.dataTransfer.files;
-    sendFile(files[0]);
-  } else {
-    errorWrap.classList.remove('hidden');
-    errorMessage.innerText =
-      'Чтобы загрузить новое изображение, пожалуйста воспользуйтесь пунктом "Загрузить новое" в меню.';
+function dragStop() {
+  if (movedPiece) {
+    movedPiece = null;
   }
 }
