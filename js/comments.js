@@ -40,7 +40,7 @@ function closeAllForms() {
 function createNewComment(event) {
   // console.log(event.target);
   // console.log(event.currentTarget);
-  // console.log(event.pageX, event.pageY);
+  // console.log(event.pageX, event.pageY)
   if (event.target != formContainer) {
     return;
   }
@@ -127,12 +127,12 @@ function sendingComment(event) {
 
 function createCommentsArray(comments) {
   const commentArray = [];
-  // console.log('3', comments);
+  // console.log('3',comments);
   for (const comment in comments) {
     commentArray.push(comments[comment]);
   }
   clearForms();
-  // console.log('4', commentArray);
+  //  console.log('4',commentArray);
   createCommentForm(commentArray);
 }
 
