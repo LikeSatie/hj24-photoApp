@@ -3,11 +3,9 @@
 function clearForms() {
   const forms = document.querySelectorAll('.comments__form');
   for (const form of forms) {
-    //document.querySelector('.app').removeChild(form);
     formContainer.removeChild(form);
   }
 }
-
 function onOpen() {
   menu.dataset.state = 'initial';
   image.src = '';
@@ -114,7 +112,7 @@ if (location.search) {
     let indexOfShare = href.indexOf('&share');
     if (indexOfShare == -1) {
       imageId = href.substring(indexOfId);
-      //   console.log(imageId);
+      // console.log(imageId);
       webSocket();
     } else {
       imageId = href.substring(indexOfId, indexOfShare);
@@ -124,11 +122,7 @@ if (location.search) {
     }
     url.value = window.location.href;
   }
-  console.log(
-    `Перехожу по ссылке ${`\`${location.origin + location.pathname}${
-      location.search
-    }\``}`
-  );
+  // console.log(`Перехожу по ссылке ${`\`${location.origin + location.pathname}${location.search}\``}`);
   getShareData(imageId);
 }
 
@@ -136,7 +130,7 @@ function getShareData(id) {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', `https://neto-api.herokuapp.com/pic/${id}`);
   xhr.addEventListener('load', () => {
-    // console.log(xhr.status);
+    console.log(xhr.status);
     if (xhr.status === 200) {
       loadShareData(JSON.parse(xhr.responseText));
     } else {
@@ -201,9 +195,9 @@ function sendNewComment(id, comment, target) {
     target.querySelector('.loader').classList.add('hidden')
   );
   xhr.addEventListener('load', () => {
-    // console.log(xhr.status);
+    // console.log(xhr.status)
     if (xhr.status === 200) {
-      //   console.log('Комментарий был отправвлен!');
+      // console.log('Комментарий был отправвлен!');
       const result = JSON.parse(xhr.responseText);
       createCommentsArray(result.comments);
       needReload = false;
@@ -239,14 +233,14 @@ function sendMask(event) {
 }
 
 function pullComments(result) {
-  //   console.log(result);
+  // console.log(result);
   countComments = 0;
 
   const countCurrentComments =
     document.getElementsByClassName('comment').length -
     document.getElementsByClassName('comment load').length;
   needReload = countComments === countCurrentComments ? false : true;
-  //   console.log(countComments, countCurrentComments);
+  // console.log(countComments, countCurrentComments);
 
   if (result) {
     createCommentForm([result]);
