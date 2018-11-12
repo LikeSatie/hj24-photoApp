@@ -27,11 +27,27 @@ function clickModeDraw() {
   drawMode();
 }
 
-function smoothCurveBetween(p1, p2) {
-  const cp = p1.map((coord, idx) => (coord + p2[idx]) / 2);
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = getColor();
-  ctx.quadraticCurveTo(...p1, ...cp);
+function createCanvas() {
+  const width = getComputedStyle(
+    wrap.querySelector('.current-image')
+  ).width.slice(0, -2);
+  const height = getComputedStyle(
+    wrap.querySelector('.current-image')
+  ).height.slice(0, -2);
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.position = 'absolute';
+  canvas.style.top = '50%';
+  canvas.style.left = '50%';
+  canvas.style.transform = 'translate(-50%, -50%)';
+  canvas.style.display = 'block';
+  canvas.style.zIndex = '1';
+
+  wrap.appendChild(canvas);
+
+  curves = [];
+  drawing = false;
+  needsRepaint = false;
 }
 
 function smoothCurve(points) {
