@@ -38,34 +38,49 @@ function showError(files) {
   }
 }
 
-function loadShareData(result) {
-  //    console.log('TCL: loadShareData -> result', result);
-  //    console.log(`loadShareData() : Изображение получено! Дата публикации: ${timeParser(result.timestamp)}`);
-
-  toggleMenu(menu, comments);
-  dataToStorage('id', result.id);
-  dataToStorage('url', result.url);
-  loadImg(result.url).then(() => canvasSize());
-
-  url.value = `${location.href}`;
-  if (result.comments) {
-    createCommentsArray(result.comments);
+function sendFile(file) {
+  error.classList.add('hidden');
+  const imageTypeRegExp = /^image\/jpg|jpeg|png/;
+  if (imageTypeRegExp.test(file.type)) {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('title', file.name);
+    formData.append('image', file);
+    xhr.open('POST', 'https://neto-api.herokuapp.com/pic/');
+    xhr.addEventListener('loadstart', () => (imgLoad.style.display = 'block'));
+    xhr.addEventListener('loadend', () => (imgLoad.style.display = 'none'));
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        if (connection) {
+          connection.close(1000, 'Работа закончена');
+        }
+        const result = JSON.parse(xhr.responseText);
+        image.src = result.url;
+        mask.classList.add('hidden');
+        mask.src = '';
+        imageId = result.id;
+        url.value =
+          `${location.origin + location.pathname}?${imageId}` + '&share';
+        menu.dataset.state = 'selected';
+        share.dataset.state = 'selected';
+        clearCommentForms();
+        webSocket();
+        if (!location.search) {
+          location.search = `?${imageId}`;
+        }
+      } else {
+        error.classList.remove('hidden');
+        errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
+          xhr.statusText
+        }... Повторите попытку позже... `;
+      }
+    });
+    xhr.send(formData);
+  } else {
+    error.classList.remove('hidden');
+    errorMessage.innerText =
+      'Неверный формат файла. Пожалуйста, выберите изображение в формате .jpg или .png.';
   }
-  if (result.mask) {
-    mask.src = result.mask;
-    mask.classList.remove('hidden');
-    loadMask(result.mask)
-      .then(() => loadImg(result.url))
-      .then(() => maskSize());
-  }
-  if (document.getElementById('comments-off').checked) {
-    const commentsForm = document.querySelectorAll('.comments__form');
-    for (const comment of commentsForm) {
-      comment.classList.add('hidden');
-    }
-  }
-  getWSConnect();
-  closeAllForms();
 }
 
 function sendNewComment(id, comment, target) {
