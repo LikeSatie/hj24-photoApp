@@ -83,25 +83,3 @@ function draw(event) {
   x = event.offsetX;
   y = event.offsetY;
 }
-
-canvas.addEventListener('mousemove', event => {
-  if (drawing) {
-    const point = [event.offsetX, event.offsetY];
-    curves[curves.length - 1].push(point);
-    needsRepaint = true;
-  }
-});
-
-function repaint() {
-  curves.forEach(curve => smoothCurve(curve));
-}
-
-function tick() {
-  if (needsRepaint) {
-    repaint();
-    needsRepaint = false;
-  }
-  window.requestAnimationFrame(tick);
-}
-
-tick();
