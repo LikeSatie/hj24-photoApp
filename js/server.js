@@ -86,7 +86,7 @@ function sendFile(file) {
 function webSocket() {
   connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${imageId}`);
   connection.addEventListener('message', event => {
-    console.log(JSON.parse(event.data));
+    // console.log(JSON.parse(event.data));
     if (JSON.parse(event.data).event === 'pic') {
       if (JSON.parse(event.data).pic.mask) {
         canvas.style.background = `url(${JSON.parse(event.data).pic.mask})`;
@@ -114,7 +114,7 @@ if (location.search) {
     let indexOfShare = href.indexOf('&share');
     if (indexOfShare == -1) {
       imageId = href.substring(indexOfId);
-      console.log(imageId);
+      //   console.log(imageId);
       webSocket();
     } else {
       imageId = href.substring(indexOfId, indexOfShare);
@@ -136,7 +136,7 @@ function getShareData(id) {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', `https://neto-api.herokuapp.com/pic/${id}`);
   xhr.addEventListener('load', () => {
-    console.log(xhr.status);
+    // console.log(xhr.status);
     if (xhr.status === 200) {
       loadShareData(JSON.parse(xhr.responseText));
     } else {
@@ -173,7 +173,7 @@ function loadShareData(result) {
   }
 
   if (document.getElementById('comments-off').checked) {
-    console.log('Комментарии выключены!');
+    // console.log('Комментарии выключены!');
     commentsForm = document.querySelectorAll('.comments__form');
     for (const comment of commentsForm) {
       comment.classList.add('hidden');
@@ -201,9 +201,9 @@ function sendNewComment(id, comment, target) {
     target.querySelector('.loader').classList.add('hidden')
   );
   xhr.addEventListener('load', () => {
-    console.log(xhr.status);
+    // console.log(xhr.status);
     if (xhr.status === 200) {
-      console.log('Комментарий был отправвлен!');
+      //   console.log('Комментарий был отправвлен!');
       const result = JSON.parse(xhr.responseText);
       createCommentsArray(result.comments);
       needReload = false;
@@ -228,12 +228,34 @@ function sendMask(event) {
     timer = now;
   }
   if (event === 'mask') {
-    console.log('Событие mask...');
+    // console.log('Событие mask...');
     mask.classList.remove('hidden');
     mask.src = response.url;
     clearCanvas();
   } else if (event === 'comment') {
-    console.log('Событие comment...');
+    // console.log('Событие comment...');
     pullComments(response);
+  }
+}
+
+function pullComments(result) {
+  //   console.log(result);
+  countComments = 0;
+
+  const countCurrentComments =
+    document.getElementsByClassName('comment').length -
+    document.getElementsByClassName('comment load').length;
+  needReload = countComments === countCurrentComments ? false : true;
+  //   console.log(countComments, countCurrentComments);
+
+  if (result) {
+    createCommentForm([result]);
+  }
+
+  if (document.getElementById('comments-off').checked) {
+    const commentsForm = document.querySelectorAll('.comments__form');
+    for (const comment of commentsForm) {
+      comment.classList.add('hidden');
+    }
   }
 }
