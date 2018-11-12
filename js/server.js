@@ -14,10 +14,9 @@ function onOpen() {
   clearForms();
 }
 
-if (sessionStorage.id) {
-  //    console.log("TCL: sessionStorage.id)", sessionStorage.id);
-  //    console.log(`Перехожу по ссылке ${`\`${location.origin + location.pathname}?${sessionStorage.id}\``}`);
-  getShareData(location.search.replace(/^\?/, ''));
+if (href.indexOf('?id=') == -1) {
+  mask.classList.add('hidden');
+  onOpen();
 }
 
 if (location.search) {
