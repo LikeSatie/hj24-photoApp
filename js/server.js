@@ -26,25 +26,16 @@ function clearCommentForms() {
   }
 }
 
-function getShareData(id) {
-  //    console.log("TCL: getShareData -> sessionStorage.id", id);
-  //   console.log(`Запущена функция getShareData()`);
-  const xhr = new XMLHttpRequest();
-  xhr.open(
-    'GET',
-    `https://neto-api.herokuapp.com/pic/${sessionStorage.id || id}`
-  );
-  xhr.addEventListener('load', () => {
-    if (xhr.status === 200) {
-      loadShareData(JSON.parse(xhr.responseText));
-    } else {
-      errorWrap.classList.remove('hidden');
-      errorMessage.innerText = `Произошла ошибка ${xhr.status}! ${
-        xhr.statusText
-      }... Повторите попытку позже... `;
-    }
-  });
-  xhr.send();
+function showError(files) {
+  if (files[0].type !== 'image/png' && files[0].type !== 'image/jpeg') {
+    errorMessage.textContent =
+      'Неверный формат файла. Пожалуйста, выберите изображение в формате .jpg или .png.';
+    error.classList.remove('hidden');
+    onOpen();
+  } else {
+    error.classList.add('hidden');
+    return true;
+  }
 }
 
 function loadShareData(result) {
